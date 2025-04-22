@@ -8,4 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 class Penjualan extends Model
 {
     use HasFactory;
+
+    protected $table = 'penjualan';
+
+    protected $fillable = [
+        'barang_id',
+        'tgl_transaksi',
+        'kategori_id',
+        'jumlah_terjual',
+        'kontak_pelanggan',
+        'bukti_transaksi',
+    ];
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class);
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class);
+    }
+
 }

@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained('supplier')->onDelete('cascade');
             $table->date('tgl_transaksi');
             $table->foreignId('kategori_id')->constrained('kategori')->onDelete('cascade');
+            $table->foreignId('barang_id')->constrained('barang')->onDelete('cascade');
             $table->integer('jumlah_pembelian');
             $table->decimal('harga', 10, 2);
-            $table->text('bukti_transaksi')->nullable;
+            $table->string('bukti_transaksi');
             $table->timestamps();
         });
     }

@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('barang_id')->constrained('barang')->onDelete('cascade');
             $table->date('tgl_transaksi');
+            $table->foreignId('kategori_id')->constrained('kategori')->onDelete('cascade');
+            $table->decimal('total_pemasukan', 10,2);
             $table->integer('jumlah_terjual');
-            $table->string('kontak_pelanggan', 15);
-            $table->text('bukti_transaksi')->nullable;
+            $table->string('kontak_pelanggan', 20);
+            $table->string('bukti_transaksi');
             $table->timestamps();
         });
     }
@@ -30,4 +32,3 @@ return new class extends Migration
         Schema::dropIfExists('penjualan');
     }
 };
-  

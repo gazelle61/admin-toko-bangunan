@@ -11,50 +11,57 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
-            'phone' => 'nullable|string|max:15',
+            'phone' => 'required|string|unique:users',
             'address' => 'nullable|string|max:500',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json(['token' => $token, 'user' => $user], 201);
+        return response()->json([
+            'message' => 'Register berhasil',
+            'user' => $user,
+            'token' => $user->createToken('api_token')->plainTextToken
+        ]);
     }
 
-    public function login(Request $requset)
+    public function login(Request $request)
     {
-        $requset->validate([
-            'login' => 'required|string', //Ini bisa pake email atau nomor hp
-            'password' => 'required|string',
+        $request->validate([
+            'phone' => 'required|string', //Ini bisa pake email atau nomor hp
+            'password' => 'required',
         ]);
 
-        $user = User::where('email', $requset->login)
-                    ->orWhere('phone', $requset->login)
-                    ->first();
+        $user = User::where('phone', $request->phone)->first();
 
-        if (!$user || !Hash::check($requset->password, $user->password)) {
-            throw ValidationException::withMessages(['login' => 'Invalid credentials']);
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['Email atau password salah'],
+            ]);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json(['token' => $token, 'user' => $user]);
+        return response()->json([
+            'message' => 'Login berhasil',
+            'user' => $user,
+            'token' => $user->createToken('api_token')->plainTextToken
+        ]);
     }
 
-    public function logout(Request $requset)
+    public function logout(Request $request)
     {
-        $requset()->user()->tokens()->delete();
-        return response()->json(['message' => 'Logged out']);
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logout berhasil'
+        ]);
     }
 }

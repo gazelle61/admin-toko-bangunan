@@ -13,6 +13,6 @@ class BarangSeeder extends Seeder
      */
     public function run(): void
     {
-         
+         //
     }
 }
