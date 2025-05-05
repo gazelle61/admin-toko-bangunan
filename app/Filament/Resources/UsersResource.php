@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsersResource\Pages;
 use App\Filament\Resources\UsersResource\RelationManagers;
-use App\Models\User;
 use App\Models\Users;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
@@ -20,17 +19,21 @@ class UsersResource extends Resource
 {
     protected static ?string $model = Users::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-users';
-
-    protected static ?string $modelLabel = 'Users';
+    protected static ?string $navigationIcon = 'heroicon-s-user-circle';
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')->required(),
-                TextInput::make('email')->email(),
-                TextInput::make('password')->password()->visibleOn('create'),
+        return $form->schema([
+            TextInput::make('name')
+                ->required(),
+
+            TextInput::make('email')
+                ->email()
+                ->visibleOn('create'),
+
+            TextInput::make('password')
+                ->password()
+                ->visibleOn('create')
             ]);
     }
 
@@ -38,28 +41,43 @@ class UsersResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id'),
-                TextColumn::make('name'),
-                TextColumn::make('email'),
-            ])
+                TextColumn::make('id')
+                    ->label('ID'),
+
+                TextColumn::make('name')
+                    ->searchable(),
+
+                TextColumn::make('email')
+                ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\DeleteBulkAction::make()
+                ])
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
-        ];
+                //
+            ];
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Admin';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Pengaturan';
     }
 
     public static function getPages(): array

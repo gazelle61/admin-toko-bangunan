@@ -15,6 +15,7 @@ class Penjualan extends Model
         'barang_id',
         'tgl_transaksi',
         'kategori_id',
+        'total_pemasukan',
         'jumlah_terjual',
         'kontak_pelanggan',
         'bukti_transaksi',
