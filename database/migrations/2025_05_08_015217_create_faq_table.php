@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nama_pelanggan');
             $table->string('email')->unique();
             $table->text('tanya');
-            $table->text('jawab');
             $table->timestamps();
         });
     }
