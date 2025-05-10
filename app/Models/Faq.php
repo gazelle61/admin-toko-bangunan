@@ -15,6 +15,5 @@ class Faq extends Model
         'nama_pelanggan',
         'email',
         'tanya',
-        'jawab',
     ];
 }

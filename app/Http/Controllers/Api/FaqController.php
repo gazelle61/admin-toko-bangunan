@@ -24,14 +24,12 @@ class FaqController extends Controller
             'nama_pelanggan' => 'required|string|max:255',
             'email' => 'required|string|unique:faq,email',
             'tanya' => 'required|string',
-            'jawab' => 'required|string',
         ]);
 
         $faq = Faq::create([
             'nama_pelanggan' => $data['nama_pelanggan'],
             'email' => $data['email'],
             'tanya' => $data['tanya'],
-            'jawab' => $data['jawab'],
         ]);
 
         return response()->json($faq, 201);
@@ -45,7 +43,6 @@ class FaqController extends Controller
             'nama_pelanggan' => 'required|string|max:255',
             'email' => 'required|string|unique:faq,email',
             'tanya' => 'required|string',
-            'jawab' => 'required|string',
         ]);
 
         $faq->update($data);
