@@ -37,6 +37,10 @@ class BarangResource extends Resource
                         ->maxLength(255)
                         ->required(),
 
+                    TextInput::make('ukuran')
+                        ->maxLength(255)
+                        ->required(),
+
                     Select::make('kategori_id')
                         ->options(Kategori::all()->pluck('nama_kategori', 'id'))
                         ->label('Kategori barang')
@@ -86,6 +90,10 @@ class BarangResource extends Resource
                     ->label('Nama Barang')
                     ->searchable(),
                     // ->sortable()
+
+                TextColumn::make('ukuran')
+                    ->label('Ukuran')
+                    ->searchable(),
 
                 TextColumn::make('kategori.nama_kategori')
                     ->label('Kategori')

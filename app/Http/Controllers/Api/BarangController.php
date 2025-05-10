@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Barang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
@@ -23,6 +24,7 @@ class BarangController extends Controller
     {
         $validated = $request->validate([
             'nama_barang' => 'required|string',
+            'ukuran' => 'required|string',
             'kategori_id' => 'required|exists:kategori,id',
             'harga' => 'required|numeric',
             'stok' => 'required|integer',
@@ -44,6 +46,10 @@ class BarangController extends Controller
      */
     public function show(Barang $barang)
     {
+        if($barang->foto_barang){
+            $barang->foto_barang = Storage::url('/foto_barang' . $barang->foto_barang);
+        }
+
         return response()->json($barang);
     }
 

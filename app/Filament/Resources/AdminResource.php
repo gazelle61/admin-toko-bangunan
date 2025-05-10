@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UsersResource\Pages;
-use App\Filament\Resources\UsersResource\RelationManagers;
-use App\Models\Users;
+use App\Filament\Resources\AdminResource\Pages;
+use App\Filament\Resources\AdminResource\RelationManagers;
+use App\Models\Admin;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -15,25 +15,26 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UsersResource extends Resource
+class AdminResource extends Resource
 {
-    protected static ?string $model = Users::class;
+    protected static ?string $model = Admin::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-user-circle';
 
     public static function form(Form $form): Form
     {
-        return $form->schema([
-            TextInput::make('name')
-                ->required(),
+        return $form
+            ->schema([
+                TextInput::make('name')
+                    ->required(),
 
-            TextInput::make('email')
-                ->email()
-                ->visibleOn('create'),
+                TextInput::make('email')
+                    ->email()
+                    ->visibleOn('create'),
 
-            TextInput::make('password')
-                ->password()
-                ->visibleOn('create')
+                TextInput::make('password')
+                    ->password()
+                    ->visibleOn('create')
             ]);
     }
 
@@ -48,7 +49,8 @@ class UsersResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('email')
-                ])
+                    ->searchable(),
+            ])
             ->filters([
                 //
             ])
@@ -58,16 +60,16 @@ class UsersResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                ])
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getPluralModelLabel(): string
@@ -83,9 +85,9 @@ class UsersResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUsers::route('/create'),
-            'edit' => Pages\EditUsers::route('/{record}/edit'),
+            'index' => Pages\ListAdmins::route('/'),
+            'create' => Pages\CreateAdmin::route('/create'),
+            'edit' => Pages\EditAdmin::route('/{record}/edit'),
         ];
     }
 }

@@ -34,8 +34,7 @@ class PembelianResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Section::make('Create a Receipt')
-                ->description('create receipts over here.')
+            Section::make('Masukkan hasil pembelian barang')
                 ->schema([
                     Select::make('supplier_id')
                         ->label('Nama supplier')

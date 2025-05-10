@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Users extends Model
+class Faq extends Model
 {
     use HasFactory;
 
-    protected $table = 'users';
+    protected $table = 'faq';
 
     protected $fillable = [
-        'name',
+        'nama_pelanggan',
         'email',
-        'email_verified_at',
-        'phone_number',
-        'password',
-        'alamat',
+        'tanya',
+        'jawab',
     ];
-
 }

@@ -33,8 +33,7 @@ class PenjualanResource extends Resource
     {
         return $form
             ->schema([
-            Section::make('Create a Receipt')
-                ->description('create receipts over here.')
+            Section::make('Masukkan hasil penjualan')
                 ->schema([
                 Select::make('barang_id')
                     ->label('Nama barang')

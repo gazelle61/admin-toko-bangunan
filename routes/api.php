@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
+use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\PenjualanController;
+use App\Http\Controllers\Api\SocialiteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,16 +23,32 @@ use App\Http\Controllers\AuthController;
 */
 
 // Auth
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('auth')->group(function (){
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 });
+
+Route::get('/auth/redirect', [
+    SocialiteController::class, 'redirect'
+]);
+
+Route::get('/auth/google/callback', [
+    SocialiteController::class, 'callback'
+]);
+
 // Data
 Route::apiResource('kategori', KategoriController::class);
 Route::apiResource('barang', BarangController::class);
-Route::apiResource('penjualan', PenjualanController::class);
 
+Route::prefix('faq')->controller(FaqController::class)->group(function () {
+    Route::get('/', 'index');       // /api/faq
+    Route::post('/', 'store');      // /api/faq
+    Route::get('{id}', 'show');     // /api/faq/{id}
+    Route::put('{id}', 'update');   // /api/faq/{id}
+    Route::delete('{id}', 'destroy');// /api/faq/{id}
+});
+
+Route::apiResource('penjualan', PenjualanController::class);
 Route::apiResource('image', ImageController::class);
