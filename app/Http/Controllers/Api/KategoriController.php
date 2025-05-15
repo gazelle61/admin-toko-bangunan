@@ -23,6 +23,7 @@ class KategoriController extends Controller
     {
         $validated = $request->validate([
             'nama_kategori' => 'required|string',
+            'gambar' => 'nullable|string',
         ]);
 
         $kategori = Kategori::create($validated);
