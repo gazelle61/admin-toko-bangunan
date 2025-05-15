@@ -6,11 +6,13 @@ use App\Filament\Resources\KategoriResource\Pages;
 use App\Filament\Resources\KategoriResource\RelationManagers;
 use App\Models\Kategori;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,6 +32,10 @@ class KategoriResource extends Resource
                 ->maxLength(255)
                 ->required(),
 
+            FileUpload::make('gambar')
+                ->image()
+                ->directory('gambar')
+                ->nullable(),
             ]);
     }
 
@@ -43,6 +49,12 @@ class KategoriResource extends Resource
                 TextColumn::make('nama_kategori')
                     ->label('Nama Kategori')
                     ->searchable(),
+
+                ImageColumn::make('gambar')
+                    ->label('Foto Kategori')
+                    ->height(100)
+                    ->width(100)
+                    ->extraImgAttributes(['style' => 'object-fit: cover;']),
             ])
             ->filters([
                 //
