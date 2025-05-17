@@ -12,8 +12,12 @@ class Faq extends Model
     protected $table = 'faq';
 
     protected $fillable = [
-        'nama_pelanggan',
-        'email',
+        'user_id',
         'tanya',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

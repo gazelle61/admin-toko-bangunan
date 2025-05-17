@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('faq', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_pelanggan');
-            $table->string('email')->unique();
+            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->text('tanya');
             $table->timestamps();
         });
