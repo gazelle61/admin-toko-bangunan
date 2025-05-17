@@ -21,14 +21,12 @@ class FaqController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nama_pelanggan' => 'required|string|max:255',
-            'email' => 'required|string|unique:faq,email',
+            'user_id' => 'required|exists:user,id',
             'tanya' => 'required|string',
         ]);
 
         $faq = Faq::create([
-            'nama_pelanggan' => $data['nama_pelanggan'],
-            'email' => $data['email'],
+            'user_id' => $data['user_id'],
             'tanya' => $data['tanya'],
         ]);
 
@@ -40,8 +38,7 @@ class FaqController extends Controller
         $faq = Faq::findOrFail($id);
 
         $data = $request->validate([
-            'nama_pelanggan' => 'required|string|max:255',
-            'email' => 'required|string|unique:faq,email',
+            'user_id' => 'required|exists:user,id',
             'tanya' => 'required|string',
         ]);
 
