@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class KategoriController extends Controller
 {
@@ -23,7 +24,7 @@ class KategoriController extends Controller
     {
         $validated = $request->validate([
             'nama_kategori' => 'required|string',
-            'gambar' => 'nullable|string',
+            'foto_kategori' => 'required|string',
         ]);
 
         $kategori = Kategori::create($validated);
@@ -36,6 +37,10 @@ class KategoriController extends Controller
      */
     public function show(Kategori $kategori)
     {
+        if($kategori->foto_kategori){
+            $kategori->foto_kategori = Storage::url('/foto_kategori' . $kategori->foto_kategori);
+        }
+
         return response()->json($kategori);
     }
 

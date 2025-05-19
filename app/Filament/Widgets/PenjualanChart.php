@@ -72,9 +72,9 @@ class PenjualanChart extends ChartWidget
         return 'line';
     }
 
-    public static function getColumns(): int
+    protected static function getColumn(): int
     {
-        return 12;
+        return 3;
     }
 
     protected function getFilters(): ?array

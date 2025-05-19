@@ -32,10 +32,9 @@ class KategoriResource extends Resource
                 ->maxLength(255)
                 ->required(),
 
-            FileUpload::make('gambar')
+            FileUpload::make('foto_kategori')
                 ->image()
-                ->directory('gambar')
-                ->nullable(),
+                ->directory('foto_kategori'),
             ]);
     }
 
@@ -50,7 +49,7 @@ class KategoriResource extends Resource
                     ->label('Nama Kategori')
                     ->searchable(),
 
-                ImageColumn::make('gambar')
+                ImageColumn::make('foto_kategori')
                     ->label('Foto Kategori')
                     ->height(100)
                     ->width(100)
