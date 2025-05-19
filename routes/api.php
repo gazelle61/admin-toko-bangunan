@@ -51,4 +51,3 @@ Route::prefix('faq')->controller(FaqController::class)->group(function () {
 });
 
 Route::apiResource('penjualan', PenjualanController::class);
-Route::apiResource('image', ImageController::class);
