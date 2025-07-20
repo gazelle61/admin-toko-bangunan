@@ -24,8 +24,12 @@ class KategoriController extends Controller
     {
         $validated = $request->validate([
             'nama_kategori' => 'required|string',
-            'foto_kategori' => 'required|string',
+            'foto_kategori' => 'nullable|image',
         ]);
+
+        if ($request->hasFile('foto_kategori')) {
+            $validated['foto_kategori'] = $request->file('foto_kategori')->store('foto_kategori', 'public');
+        }
 
         $kategori = Kategori::create($validated);
 
@@ -37,9 +41,9 @@ class KategoriController extends Controller
      */
     public function show(Kategori $kategori)
     {
-        if($kategori->foto_kategori){
-            $kategori->foto_kategori = Storage::url('/foto_kategori' . $kategori->foto_kategori);
-        }
+        $kategori->foto_kategori = $kategori->foto_kategori
+        ? asset('storage/' . $kategori->foto_kategori)
+        : null;
 
         return response()->json($kategori);
     }
@@ -49,7 +53,20 @@ class KategoriController extends Controller
      */
     public function update(Request $request, Kategori $kategori)
     {
-        $kategori->update($request->all());
+        $validated = $request->validate([
+            'nama_kategori' => 'required|string',
+            'foto_kategori' => 'nullable|image',
+        ]);
+
+        if ($request->hasFile('foto_kategori')) {
+            if ($kategori->foto_kategori) {
+                Storage::disk('public')->delete($kategori->foto_kategori);
+            }
+            $validated['foto_kategori'] = $request->file('foto_kategori')->store('foto_kategori', 'public');
+        }
+
+        $kategori->update($validated);
+
         return response()->json($kategori);
     }
 
@@ -58,7 +75,13 @@ class KategoriController extends Controller
      */
     public function destroy(Kategori $kategori)
     {
+        if ($kategori->foto_kategori) {
+            Storage::disk('public')->delete($kategori->foto_kategori);
+        }
+
         $kategori->delete();
+
         return response()->json(null, 204);
     }
+
 }

@@ -29,8 +29,12 @@ class BarangController extends Controller
             'harga' => 'required|numeric',
             'stok' => 'required|integer',
             'deskripsi' => 'required|string',
-            'foto_barang' => 'nullable|string',
+            'foto_barang' => 'nullable|image',
         ]);
+
+        if ($request->hasFile('foto_barang')) {
+            $validated['foto_barang'] = $request->file('foto_barang')->store('foto_barang', 'public');
+        }
 
         $barang = Barang::create($validated);
 
@@ -46,9 +50,9 @@ class BarangController extends Controller
      */
     public function show(Barang $barang)
     {
-        if($barang->foto_barang){
-            $barang->foto_barang = Storage::url('/foto_barang' . $barang->foto_barang);
-        }
+        $barang->foto_barang = $barang->foto_barang
+            ? asset('storage/' . $barang->foto_barang)
+            : null;
 
         return response()->json($barang);
     }
@@ -58,7 +62,25 @@ class BarangController extends Controller
      */
     public function update(Request $request, Barang $barang)
     {
-        $barang->update($request->all());
+        $validated = $request->validate([
+            'nama_barang' => 'required|string',
+            'ukuran' => 'required|string',
+            'kategori_id' => 'required|exists:kategori,id',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer',
+            'deskripsi' => 'required|string',
+            'foto_barang' => 'nullable|image',
+        ]);
+
+        if ($request->hasFile('foto_barang')) {
+            if ($barang->foto_barang) {
+                Storage::disk('public')->delete($barang->foto_barang);
+            }
+            $validated['foto_barang'] = $request->file('foto_barang')->store('foto_barang', 'public');
+        }
+
+        $barang->update($validated);
+
         return response()->json($barang);
     }
 
@@ -67,7 +89,11 @@ class BarangController extends Controller
      */
     public function destroy(Barang $barang)
     {
+        if ($barang->foto_barang) {
+            Storage::disk('public')->delete($barang->foto_barang);
+        }
         $barang->delete();
+
         return response()->json(null, 204);
     }
 }
