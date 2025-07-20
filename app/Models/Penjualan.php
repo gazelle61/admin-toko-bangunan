@@ -11,24 +11,24 @@ class Penjualan extends Model
 
     protected $table = 'penjualan';
 
+    protected $with = ['detail.barang', 'detail.kategori'];
+
     protected $fillable = [
-        'barang_id',
+        'users_id',
         'tgl_transaksi',
-        'kategori_id',
         'total_pemasukan',
-        'jumlah_terjual',
         'kontak_pelanggan',
         'bukti_transaksi',
+        'source'
     ];
 
-    public function barang()
+    public function detail()
     {
-        return $this->belongsTo(Barang::class);
+        return $this->hasMany(PenjualanDetail::class);
     }
 
-    public function kategori()
+    public function user()
     {
-        return $this->belongsTo(Kategori::class);
+        return $this->belongsTo(Users::class);
     }
-
 }

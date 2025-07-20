@@ -3,30 +3,26 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Models\Users;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
 
 class AuthController extends Controller
 {
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:user,email',
-            'phone' => 'required|unique:user,phone',
-            'address' => 'required|string',
-            'password' => 'required|min:6|confirmed',
-        ]);
+        $data = $request->validate();
 
-        $user = User::create([
+        $user = Users::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'phone' => $data['phone'],
             'address' => $data['address'],
+            'profile_photo' => $data['profile_photo'],
             'password' => bcrypt($data['password']),
         ]);
 
@@ -38,14 +34,11 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $data = $request->validate([
-            'phone' => 'required|string',
-            'password' => 'required',
-        ]);
+        $data = $request->validate();
 
-        $user = User::where('phone', $data['phone'])->first();
+        $user = Users::where('phone', $data['phone'])->first();
 
         if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
@@ -65,8 +58,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $user = $request->user();
-        $user->currentAccessToken()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logged out']);
     }

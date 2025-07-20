@@ -12,18 +12,17 @@ class Barang extends Model
     protected $table = 'barang';
 
     protected $fillable = [
+        'foto_barang',
         'nama_barang',
         'ukuran',
         'kategori_id',
         'harga',
         'stok',
-        'deskripsi',
-        'foto_barang'
+        'deskripsi'
     ];
 
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
     }
-
 }
