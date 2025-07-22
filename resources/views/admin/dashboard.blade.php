@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-  <div class="row">
+  <div class="row justify-content-center">
     {{-- Box: Kategori --}}
     <div class="col-lg-3 col-6">
       <div class="small-box bg-info">
@@ -48,7 +48,7 @@
     </div>
    </div>
 
-   <div class="row">
+   <div class="row justify-content-center">
     <div class="card">
         <div class="card-header">
             <h3 class="card-title"><b>Grafik Penjualan</b></h3>

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Data Barang</h4>
+        <h4><b>Data Barang</b></h4>
     </div>
 
     <div class="mb-3 d-flex justify-content-between align-items-center">
