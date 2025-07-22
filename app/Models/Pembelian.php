@@ -35,5 +35,4 @@ class Pembelian extends Model
     {
         return $this->belongsTo(Barang::class);
     }
-
 }

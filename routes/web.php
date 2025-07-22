@@ -5,11 +5,10 @@ use App\Http\Controllers\Api\SocialiteController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KasirController;
-use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\penjualanController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PembelianController;
-use App\Http\Controllers\penjualanController as ControllersPenjualanController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,9 +54,9 @@ Route::prefix('admin')->group(function () {
 });
 
 // PENJUALAN
-Route::get('/admin/penjualan', [ControllersPenjualanController::class, 'index'])->name('penjualan.index');
-Route::get('/admin/penjualan/create', [ControllersPenjualanController::class, 'create'])->name('penjualan.create');
-Route::post('/admin/penjualan', [ControllersPenjualanController::class, 'store'])->name('penjualan.store');
+Route::prefix('admin')->group(function () {
+    Route::resource('penjualan', penjualanController::class);
+});
 
 // BARANG
 Route::prefix('admin')->group(function () {
@@ -70,7 +69,9 @@ Route::prefix('admin')->group(function () {
 });
 
 // PEMBELIAN
-Route::get('/admin/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+Route::prefix('admin')->group(function () {
+    Route::resource('pembelian', PembelianController::class);
+});
 
 // SUPPLIER
 Route::prefix('admin')->group(function () {

@@ -2,18 +2,21 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-flex justify-content-between mb-3">
-        <h4>Daftar Supplier</h4>
-        <a href="{{ route('supplier.create') }}" class="btn btn-primary">+ Tambah Data</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4><b>Data Supplier</b></h4>
     </div>
 
-    <form method="GET" class="mb-3">
-        <input type="text" name="search" class="form-control" placeholder="Cari ..." value="{{ request('search') }}">
-    </form>
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+        <a href="{{ route('supplier.create') }}" class="btn btn-primary" style="max-width: 180px; width:100%;"><i class="fas fa-plus-circle"></i> Tambah Data</a>
+
+        <form method="GET" class="d-flex" style="max-width: 300px; width:100%;">
+            <input type="text" name="search" class="form-control rounded-pill" placeholder="Cari data ..." value="{{ request('search') }}">
+        </form>
+    </div>
 
   <div class="table-reponsive">
-    <table class="table table-bordered table-stripped align-midle">
-        <thead class="text-center">
+    <table class="table table-bordered text-center align-midle">
+        <thead class="thead-light">
             <tr>
                 <th>No.</th>
                 <th>Kategori Supplier</th>
@@ -38,7 +41,7 @@
                         <form action="{{ route('supplier.destroy', $supplier->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin mau hapus?')">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-sm btn-danger">Hapus</button>
+                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                         </form>
                 </td>
             </tr>
@@ -51,9 +54,9 @@
     </table>
   </div>
 
-  {{-- <div class="mt-3">
-    {{ $barang->links() }}
-  </div> --}}
-</div>
+  <div class="mt-3 d-flex justify-content-end">
+    {{ $suppliers->withQueryString()->links() }}
+  </div>
 
+</div>
 @endsection

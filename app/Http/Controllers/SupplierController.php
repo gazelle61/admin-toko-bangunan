@@ -8,9 +8,16 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $suppliers = Supplier::with('kategori')->latest()->get();
+        $query = Supplier::with('kategori');
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_supplier', 'like', '%', $request->search . '%');
+        }
+
+        $suppliers = $query->latest()->paginate(10);
+
         return view('supplier.index', compact('suppliers'));
     }
 
