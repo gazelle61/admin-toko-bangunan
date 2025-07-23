@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|unique:users,phone',
@@ -20,10 +19,6 @@ class AuthController extends Controller
             'profile_photo' => 'nullable|string',
             'password' => 'required|min:6|confirmed',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(). 422);
-        }
 
         $user = Users::create([
             'name' => $request->name,
@@ -34,7 +29,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $token = $user->createToken('FE Token')->plainTextToken;
+        $token = $user->createToken('customer-token')->plainTextToken;
 
         return response()->json([
             'user' => $user,
@@ -44,29 +39,33 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $request->validate([
+            'phone' => 'required|string|exists:users,phone',
+            'password' => 'required|string',
+        ]);
+
         $user = Users::where('phone', $request->phone)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('customer-token')->plainTextToken;
 
         return response()->json([
             'user'  => $user,
             'token' => $token,
-        ]);
+        ], 201);
+    }
+
+    public function users(Request $request)
+    {
+        return response()->json($request->user());
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-
+        $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out']);
-    }
-
-    public function me(Request $request)
-    {
-        return response()->json($request->user());
     }
 }

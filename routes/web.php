@@ -37,11 +37,9 @@ Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login
 
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-Route::middleware(['auth'])->group(function () {
-
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
-
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
 // KASIR
 Route::prefix('admin')->group(function () {

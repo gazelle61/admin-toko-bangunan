@@ -14,7 +14,7 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-         return response()->json(Penjualan::with('detail.barang', 'detail.kategori')->get());
+        return response()->json(Penjualan::with('detail.barang', 'detail.kategori')->get());
     }
 
     /**
