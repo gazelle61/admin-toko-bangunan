@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PenjualanController;
 use App\Http\Controllers\Api\BarangController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\KategoriController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,8 +26,12 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/user', [AuthController::class, 'user']);
     });
 });
+
+// FAQ
+Route::post('/faq', [FaqController::class, 'store']);
 
 // Data
 Route::apiResource('kategori', KategoriController::class);
@@ -34,8 +40,16 @@ Route::apiResource('barang', BarangController::class);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/penjualan', [PenjualanController::class, 'index']);
     Route::post('/penjualan', [PenjualanController::class, 'store']);
-    Route::get('/penjualan/riwayat', [PenjualanController::class, 'riwayatUser']);
+    Route::get('/penjualan/riwayat-transaksi', [PenjualanController::class, 'riwayatUser']);
     Route::get('/penjualan/{id}', [PenjualanController::class, 'show']);
     Route::put('/penjualan/{penjualan}', [PenjualanController::class, 'update']);
     Route::delete('/penjualan/{penjualan}', [PenjualanController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{id}', [CartController::class, 'update']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::post('/cart/checkout', [CartController::class, 'checkout']);
 });
