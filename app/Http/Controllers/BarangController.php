@@ -18,7 +18,7 @@ class BarangController extends Controller
         }
 
         $barangs = $query->latest()->paginate(10);
-        
+
         return view('barang.index', compact('barangs'));
     }
 

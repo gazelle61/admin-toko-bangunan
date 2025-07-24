@@ -37,9 +37,9 @@ class PenjualanController extends Controller
         $penjualan = Penjualan::create([
             'users_id' => auth()->id(),
             'tgl_transaksi' => $validated['tgl_transaksi'],
-            'total_pemasukan'=> $validated['total_pemasukan'],
-            'kontak_pelanggan'=> $validated['kontak_pelanggan'] ?? null,
-            'bukti_transaksi'=> $validated['bukti_transaksi'] ?? null,
+            'total_pemasukan' => $validated['total_pemasukan'],
+            'kontak_pelanggan' => $validated['kontak_pelanggan'] ?? null,
+            'bukti_transaksi' => $validated['bukti_transaksi'] ?? null,
             'source' => 'online',
         ]);
 
@@ -85,17 +85,17 @@ class PenjualanController extends Controller
         }
 
         return response()->json([
-            'id' =>$penjualan->id,
+            'id' => $penjualan->id,
             'users_id' => $penjualan->users_id,
             'tgl_transaksi' => $penjualan->tgl_transaksi,
-            'total_pemasukan'=> $penjualan->total_pemasukan,
-            'kontak_pelanggan'=> $penjualan->kontak_pelanggan,
+            'total_pemasukan' => $penjualan->total_pemasukan,
+            'kontak_pelanggan' => $penjualan->kontak_pelanggan,
             'source' => $penjualan->source,
             'detail' => $penjualan->detail->map(function ($item) {
                 return [
                     'barang_id' => $item->barang_id,
                     'nama_barang' => $item->barang->nama_barang,
-                    'kategori' =>$item->kategori->nama_kategori,
+                    'kategori' => $item->kategori->nama_kategori,
                     'jumlah' => $item->jumlah,
                     'harga_satuan' => $item->harga_satuan,
                 ];
@@ -106,18 +106,18 @@ class PenjualanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Penjualan $penjualan)
-    {
-        $penjualan->update($request->all());
-        return response()->json($penjualan);
-    }
+    // public function update(Request $request, Penjualan $penjualan)
+    // {
+    //     $penjualan->update($request->all());
+    //     return response()->json($penjualan);
+    // }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Penjualan $penjualan)
-    {
-        $penjualan->delete();
-        return response()->json(null, 204);
-    }
+    // public function destroy(Penjualan $penjualan)
+    // {
+    //     $penjualan->delete();
+    //     return response()->json(null, 204);
+    // }
 }

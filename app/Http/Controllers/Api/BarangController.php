@@ -9,17 +9,11 @@ use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return response()->json(Barang::all());
+        return response()->json(Barang::with('kategori')->get());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -42,14 +36,11 @@ class BarangController extends Controller
             'message' => 'Barang berhasil ditambahkan!',
             'data' => $barang
         ], 201);
-
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Barang $barang)
     {
+        $barang->load('kategori');
         $barang->foto_barang = $barang->foto_barang
             ? asset('storage/' . $barang->foto_barang)
             : null;
@@ -57,9 +48,6 @@ class BarangController extends Controller
         return response()->json($barang);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Barang $barang)
     {
         $validated = $request->validate([
@@ -84,9 +72,6 @@ class BarangController extends Controller
         return response()->json($barang);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Barang $barang)
     {
         if ($barang->foto_barang) {

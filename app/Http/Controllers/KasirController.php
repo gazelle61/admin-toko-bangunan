@@ -14,6 +14,7 @@ class KasirController extends Controller
         $barangs = Barang::all();
         $keranjang = session()->get('keranjang', []);
         $totalBelanja = collect($keranjang)->sum('total_item');
+
         return view('kasir.index', compact('barangs', 'keranjang', 'totalBelanja'));
     }
 
@@ -25,34 +26,46 @@ class KasirController extends Controller
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
-        $keranjang = session()->get('keranjang', []);
 
-        $keranjang[] = [
-            'barang_id' => $barang->id,
-            'nama_barang' => $barang->nama_barang,
-            'harga_satuan' => $barang->harga,
-            'jumlah_beli' => $request->jumlah_beli,
-            'total_item' => $barang->harga * $request->jumlah_beli,
-        ];
+        $keranjang = session('keranjang', []);
+
+        $index = collect($keranjang)->search(fn($item) => $item['barang_id'] == $barang->id);
+
+        if ($index != false) {
+            $keranjang[$index]['jumlah_beli'] += $request->jumlah_beli;
+            $keranjang[$index]['total_item'] = $keranjang[$index]['jumlah_beli'] * $barang->harga;
+        } else {
+            $keranjang[] = [
+                'barang_id' => $barang->id,
+                'nama_barang' => $barang->nama_barang,
+                'harga_satuan' => $barang->harga,
+                'jumlah_beli' => $request->jumlah_beli,
+                'total_item' => $barang->harga * $request->jumlah_beli,
+            ];
+        }
 
         session(['keranjang' => $keranjang]);
-        return redirect()->back()->with('success', 'Barang ditambahkan ke keranjang.');
+        return back()->with('success', 'Barang ditambahkan ke keranjang.');
     }
 
     public function hapusDariKeranjang($id)
     {
-        $keranjang = session()->get('keranjang', []);
-        $keranjang = array_filter($keranjang, function ($item) use($id) {
-            return $item['barang_id'] != $id;
-        });
+        $keranjang = session('keranjang', []);
+        $keranjang = collect($keranjang)->reject(fn($item) => $item['barang_id'] == $id)->values()->all();
 
-        session(['keranjang' => array_values($keranjang)]);
-        return redirect()->back()->with('success', 'Barang dihapus dari keranjang.');
+        session(['keranjang' => $keranjang]);
+
+        return back()->with('success', 'Barang dihapus dari keranjang.');
     }
 
     public function prosesTransaksi(Request $request)
     {
-        $keranjang = session()->get('keranjang', []);
+        $keranjang = session('keranjang', []);
+
+        if (empty($keranjang)) {
+            return back()->with('error', 'Keranjang kosong.');
+        }
+
         $total = collect($keranjang)->sum('total_item');
 
         $request->validate([
@@ -82,28 +95,28 @@ class KasirController extends Controller
             Barang::where('id', $item['barang_id'])->decrement('stok', $item['jumlah_beli']);
         }
 
-        // Kosongkan keranjang
         session()->forget('keranjang');
-
-        // Simpan invoice terakhir ke flash session
         session()->flash('last_invoice', $kasir->invoice_kode);
         session()->flash('last_total', $total);
 
-        return redirect()->route('kasir.nota', $kasir->invoice_kode)->with('success', 'Transaksi berhasil disimpan.'); 
+        return redirect()->route('kasir.nota', $kasir->invoice_kode)
+            ->with('success', 'Transaksi berhasil disimpan.');
     }
 
 
     public function resetKeranjang()
     {
         session()->forget('keranjang');
-        return redirect()->back()->with('success', 'Keranjang dikosongkan.');
+        return back()->with('success', 'Keranjang dikosongkan.');
     }
 
     public function nota($invoice)
     {
-        $kasir = Kasir::where('invoice_kode', $invoice)->firstOrFail();
-        $detail = DetailKasir::where('kasir_id', $kasir->id)->with('barang')->get();
+        $kasir = Kasir::with(['details.barang'])->where('invoice_kode', $invoice)->firstOrFail();
 
-        return view('kasir.nota', compact('kasir', 'detail'));
+        return view('kasir.nota', [
+            'kasir' => $kasir,
+            'detail' => $kasir->details,
+        ]);
     }
 }

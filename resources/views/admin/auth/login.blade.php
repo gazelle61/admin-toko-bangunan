@@ -11,9 +11,9 @@
 <body class="hold-transition login-page">
 
     <div class="login-box">
-        <div class="card card-outline card-primary">
+        <div class="card card-outline card-primary shadow">
             <div class="card-header text-center">
-                <a href="{{ route('admin.login') }}" class="h4"> <b>Admin</b> Toko Bangunan NOTO 19</a>
+                <a href="{{ route('admin.login') }}" class="h4"> <b>Admin</b>  NOTO 19</a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Login untuk masuk ke dashboard</p>
@@ -22,7 +22,7 @@
                     @csrf
 
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email') }}">
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email') }}" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -30,19 +30,19 @@
                         </div>
                     </div>
                     @error('email')
-                        <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger d-block mb-2">{{ $message }}</small>
                     @enderror
 
                     <div class="input-group mb-3 mt-2">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                                <i class="fas fa-lock"></i>
                             </div>
                         </div>
                     </div>
                     @error('password')
-                        <small class="text-danger">{{ $message }}</small>
+                        <small class="text-danger d-block mb-2">{{ $message }}</small>
                     @enderror
 
                     <div class="row mt-3">

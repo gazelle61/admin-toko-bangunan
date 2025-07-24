@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\SocialiteController;
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BantuanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\penjualanController;
@@ -74,4 +75,9 @@ Route::prefix('admin')->group(function () {
 // SUPPLIER
 Route::prefix('admin')->group(function () {
     Route::resource('supplier', SupplierController::class);
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/faq', [BantuanController::class, 'index'])->name('faq.index');
+    Route::put('/faq/{id}', [BantuanController::class, 'update'])->name('faq.update');
 });

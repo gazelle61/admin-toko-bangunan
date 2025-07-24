@@ -97,9 +97,9 @@ class CartController extends Controller
         $request->validate([
             'nama_penerima' => 'required|string',
             'no_telepon' => 'required|string',
-            'alamat_pengiriman'=> 'required|string',
+            'alamat_pengiriman' => 'required|string',
             'metode_pembayaran' => 'required|string',
-            'ongkir'=> 'nullable|numeric',
+            'ongkir' => 'nullable|numeric',
         ]);
 
         $userId = Auth::id();
@@ -116,15 +116,15 @@ class CartController extends Controller
         DB::beginTransaction();
         try {
             $totalBarang = $cartitems->sum('total_harga');
-            $totalHarga = $totalBarang + ($request-> ongkir ?? 0);
+            $totalHarga = $totalBarang + ($request->ongkir ?? 0);
 
             $transaksi = Transaction::create([
                 'users_id' => $userId,
                 'nama_penerima' => $request->nama_penerima,
                 'no_telepon' => $request->no_telepon,
-                'alamat_pengiriman'=> $request->alamat_pengiriman,
+                'alamat_pengiriman' => $request->alamat_pengiriman,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'ongkir'=> $request->ongkir ?? 0,
+                'ongkir' => $request->ongkir ?? 0,
                 'total_harga' => $totalHarga,
                 'status_transactions' => 'pending',
                 'created_at' => now(),

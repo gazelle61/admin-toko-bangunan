@@ -23,5 +23,4 @@ class Supplier extends Model
     {
         return $this->belongsTo(Kategori::class);
     }
-
 }
