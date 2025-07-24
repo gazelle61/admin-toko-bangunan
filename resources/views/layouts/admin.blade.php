@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
+    <link rel="stylesheet" href="{{ asset('css-adminlte/custom.css') }}">
     @stack('styles')
     <title>admin-tbnoto19</title>
 </head>

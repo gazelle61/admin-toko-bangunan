@@ -17,9 +17,9 @@ class KategoriController extends Controller
         }
 
         $kategoris = $query->latest()->paginate(10);
+
         return view('kategori.index', compact('kategoris'));
     }
-
 
     public function create()
     {
@@ -33,7 +33,7 @@ class KategoriController extends Controller
             'foto_kategori' => 'nullable|image',
         ]);
 
-        if($request->hasFile('foto_kategori')) {
+        if ($request->hasFile('foto_kategori')) {
             $validated['foto_kategori'] = $request->file('foto_kategori')->store('foto_kategori', 'public');
         }
 
@@ -57,8 +57,8 @@ class KategoriController extends Controller
             'foto_kategori' => 'nullable|image',
         ]);
 
-        if($request->hasFile('foto_kategori')) {
-            if($kategori->foto_kategori) {
+        if ($request->hasFile('foto_kategori')) {
+            if ($kategori->foto_kategori) {
                 Storage::disk('public')->delete($kategori->foto_kategori);
             }
             $validated['foto_kategori'] = $request->file('foto_kategori')->store('foto_kategori', 'public');
@@ -73,7 +73,7 @@ class KategoriController extends Controller
     {
         $kategori = Kategori::findOrFail($id);
 
-        if($kategori->foto_kategori) {
+        if ($kategori->foto_kategori) {
             Storage::disk('public')->delete($kategori->foto_kategori);
         }
 

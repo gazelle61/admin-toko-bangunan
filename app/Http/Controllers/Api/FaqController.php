@@ -12,7 +12,7 @@ class FaqController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'email'=> 'required|email',
+            'email' => 'required|email',
             'pertanyaan' => 'required|string',
         ]);
 

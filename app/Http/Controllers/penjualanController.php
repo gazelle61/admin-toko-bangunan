@@ -45,9 +45,9 @@ class penjualanController extends Controller
         $penjualan = Penjualan::create([
             'users_id' => null,
             'tgl_transaksi' => $validated['tgl_transaksi'],
-            'total_pemasukan'=> $validated['total_pemasukan'],
-            'kontak_pelanggan'=> $validated['kontak_pelanggan'] ?? null,
-            'bukti_transaksi'=> $buktiPath,
+            'total_pemasukan' => $validated['total_pemasukan'],
+            'kontak_pelanggan' => $validated['kontak_pelanggan'] ?? null,
+            'bukti_transaksi' => $buktiPath,
             'source' => 'offline',
         ]);
 

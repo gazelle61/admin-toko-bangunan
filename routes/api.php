@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BantuanController;
 use App\Http\Controllers\Api\PenjualanController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,11 +32,20 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'profile']);
+    Route::put('/profile', [ProfileController::class, 'updateProfile']);
+});
+
 // FAQ
 Route::post('/faq', [FaqController::class, 'store']);
 
+// Bantuan
+Route::apiResource('bantuan', BantuanController::class);
+
 // Data
 Route::apiResource('kategori', KategoriController::class);
+
 Route::apiResource('barang', BarangController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
