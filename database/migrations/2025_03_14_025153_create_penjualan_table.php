@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('users_id')->nullable()->constrained('users')->onDelete('set null');
             $table->date('tgl_transaksi');
-            $table->decimal('total_pemasukan', 10,2);
+            $table->decimal('total_pemasukan', 10, 2);
             $table->string('kontak_pelanggan', 20)->nullable();
             $table->string('bukti_transaksi')->nullable();
             $table->enum('source', ['online', 'offline'])->nullable();

@@ -17,6 +17,7 @@ class PenjualanDetail extends Model
         'kategori_id',
         'jumlah',
         'harga_satuan',
+        // itu harga_satuan artinya = total_belanja
     ];
 
     public function penjualan()

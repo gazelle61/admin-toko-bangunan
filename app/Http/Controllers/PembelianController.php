@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers;
 
@@ -16,7 +16,7 @@ class PembelianController extends Controller
         $query = Pembelian::with('supplier', 'kategori', 'barang');
 
         if ($request->has('search') && $request->search != '') {
-            $query->where('nama_barang', 'like', '%' . $request->search .'%');
+            $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
         $pembelians = $query->latest()->paginate(10);
@@ -28,17 +28,16 @@ class PembelianController extends Controller
     {
         $supplier = Supplier::with('supplier_id');
         $kategori = Kategori::with('kategori_id');
-        $barang = Barang::with('barang_id');
-        return view('pembelian.create', compact('supplier', 'kategori', 'barang'));
+        return view('pembelian.create', compact('supplier', 'kategori'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'supplier_id' => 'required|exists:supplier,id',
-            'tgl_transaksi'=> 'required|date',
-            'kategori_id'=> 'required|exists:kategori,id',
-            'barang_id' => 'required|exists:barang,id',
+            'tgl_transaksi' => 'required|date',
+            'kategori_id' => 'required|exists:kategori,id',
+            'supplier_id' => 'required|exists:supplier,id',
             'jumlah_pembelian' => 'required|integer',
             'harga' => 'required|numeric',
             'bukti_transaksi' => 'required|string',
@@ -58,9 +57,8 @@ class PembelianController extends Controller
         $pembelian = Pembelian::findOrFail($id);
         $supplier = Supplier::with('supplier_id');
         $kategori = Kategori::with('kategori_id');
-        $barang = Barang::with('barang_id');
 
-        return view('pembelian.edit', compact('pembelian', 'supplier', 'kategori', 'barang'));
+        return view('pembelian.edit', compact('pembelian', 'supplier', 'kategori'));
     }
 
     public function update(Request $request, $id)
@@ -69,9 +67,9 @@ class PembelianController extends Controller
 
         $validated = $request->validate([
             'supplier_id' => 'required|exists:supplier,id',
-            'tgl_transaksi'=> 'required|date',
-            'kategori_id'=> 'required|exists:kategori,id',
-            'barang_id' => 'required|exists:barang,id',
+            'tgl_transaksi' => 'required|date',
+            'kategori_id' => 'required|exists:kategori,id',
+            'supplier_id' => 'required|exists:supplier,id',
             'jumlah_pembelian' => 'required|integer',
             'harga' => 'required|numeric',
             'bukti_transaksi' => 'required|string',

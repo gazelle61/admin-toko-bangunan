@@ -46,7 +46,7 @@
                                     class="d-inline" onsubmit="return confirm('Yakin mau hapus?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-danger">Hapus</button>
+                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                                 </form>
                             </td>
                         </tr>

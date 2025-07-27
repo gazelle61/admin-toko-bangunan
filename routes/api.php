@@ -26,6 +26,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login',    [AuthController::class, 'login']);
 
+    // belum di kirim ke FE
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
@@ -33,7 +34,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'profile']);
+    Route::get('/profile', [ProfileController::class, 'index']);
     Route::put('/profile', [ProfileController::class, 'updateProfile']);
 });
 
@@ -53,8 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/penjualan', [PenjualanController::class, 'store']);
     Route::get('/penjualan/riwayat-transaksi', [PenjualanController::class, 'riwayatUser']);
     Route::get('/penjualan/{id}', [PenjualanController::class, 'show']);
-    Route::put('/penjualan/{penjualan}', [PenjualanController::class, 'update']);
-    Route::delete('/penjualan/{penjualan}', [PenjualanController::class, 'destroy']);
+    //Route::put('/penjualan/{penjualan}', [PenjualanController::class, 'update']);
+    //Route::delete('/penjualan/{penjualan}', [PenjualanController::class, 'destroy']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

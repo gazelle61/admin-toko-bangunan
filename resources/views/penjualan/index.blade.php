@@ -3,11 +3,15 @@
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Data Penjualan</h4>
+            <h4><b>Data Penjualan</b></h4>
         </div>
 
+        @if (session('success'))
+            <div class="alert aler-success">{{ session('success') }}</div>
+        @endif
+
         <div class="mb-3 d-flex justify-content-between align-items-center">
-            <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="max-width: 150px; width:100%;"><i
+            <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="max-width: 220px; width:100%;"><i
                     class="fas fa-plus-circle"></i> Tambah Data</a>
 
             <form method="GET" class="d-flex" style="max-width: 300px; width:100%;">
@@ -23,19 +27,18 @@
                         <th>No.</th>
                         <th>Bukti Transaksi</th>
                         <th>Tanggal Transaksi</th>
-                        <th>Nama Barang</th>
-                        <th>Kategori Barang</th>
-                        <th>Harga Barang</th>
-                        <th>Jumlah Terjual</th>
                         <th>Total Pemasukan</th>
-                        <th>Kontak Pelanggan</th>
+                        <th>Pelanggan</th>
+                        <th>Sumber Penjualan</th>
+                        <th>Detail Penjualan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($penjualans as $penjualan)
                         <tr>
-                            <td class="text-center">{{ $loop->iteration }}</td>
+                            <td class="text-center">
+                                {{ $loop->iteration + ($penjualans->currentPage() - 1) * $penjualans->perPage() }}</td>
                             <td class="text-center">
                                 @if ($penjualan->bukti_transaksi)
                                     <img src="{{ Storage::url($penjualan->bukti_transaksi) }}" alt="bukti_transaksi"
@@ -45,29 +48,24 @@
                                     <span class="badge badge-danger">Bukti tidak valid</span>
                                 @endif
                             </td>
-                            <td>{{ \Carbon\Carbon::parse($penjualan->tgl_transaksi)->format('d F Y') }}</td>
-                            <td>
-                                @foreach ($penjualan->detail as $item)
-                                    <div>{{ $item->barang->nama_barang ?? '-' }}</div>
-                                @endforeach
-                            </td>
-                            <td>
-                                @foreach ($penjualan->detail as $item)
-                                    <div>{{ $item->kategori->nama_kategori ?? '-' }}</div>
-                                @endforeach
-                            </td>
-                            <td>
-                                @foreach ($penjualan->detail as $item)
-                                    <div>{{ $item->jumlah ?? '-' }}</div>
-                                @endforeach
-                            </td>
+                            <td>{{ $penjualan->tgl_transaksi }}</td>
                             <td>Rp{{ number_format($penjualan->total_pemasukan, 0, ',', '.') }}</td>
                             <td>{{ $penjualan->kontak_pelanggan ?? '-' }}</td>
-                            <td>
-                                <a href="{{ route('penjualan.edit'), $penjualan->id }}"
+                            <td>{{ ucfirst($penjualan->source) }}</td>
+                            <td class="mb-0 text-left">
+                                <ul class="mb-0 text-left">
+                                    @foreach ($penjualan->detail as $d)
+                                        <li>
+                                            {{ $d->barang->nama_barang ?? '-' }}
+                                            {{ $d->jumlah }} x Rp{{ number_format($d->harga_satuan, 0, ',', '.') }}
+                                            {{ $d->kategori->nama_kategori ?? '-' }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('penjualan.edit', $penjualan->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
-                                <a href="{{ route('penjualan.show', $penjualan->id) }}"
-                                    class="btn btn-sm btn-info">Detail</a>
                             </td>
                         </tr>
                     @empty
@@ -80,7 +78,7 @@
         </div>
 
         <div class="d-flex justify-content-end mt-3">
-            {{ $penjualans->links() }}
+            {{ $penjualans->withQueryString()->links() }}
         </div>
 
     </div>

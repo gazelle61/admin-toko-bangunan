@@ -45,11 +45,12 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 // KASIR
 Route::prefix('admin')->group(function () {
     Route::resource('kasir', KasirController::class);
-
-    Route::get('kasir/nota/{invoice}', [KasirController::class, 'nota'])->name('kasir.nota');
     Route::post('kasir/tambah-keranjang', [KasirController::class, 'tambahKeranjang'])->name('kasir.tambahKeranjang');
-    Route::post('kasir/proses-transaksi', [KasirController::class, 'prosesTransaksi'])->name('kasir.prosesTransaksi');
     Route::delete('kasir/hapus-keranjang/{id}', [KasirController::class, 'hapusDariKeranjang'])->name('kasir.hapusDariKeranjang');
+    Route::post('kasir/proses-transaksi', [KasirController::class, 'prosesTransaksi'])->name('kasir.prosesTransaksi');
+    Route::delete('kasir/resetKeranjang', [KasirController::class, 'resetKeranjang'])->name('kasir.resetKeranjang');
+    Route::get('kasir/nota/{invoice}', [KasirController::class, 'nota'])->name('kasir.nota');
+    Route::get('kasir/nota/{invoice}/pdf', [KasirController::class, 'notaPdf'])->name('kasir.notaPdf');
 });
 
 // PENJUALAN
@@ -77,6 +78,7 @@ Route::prefix('admin')->group(function () {
     Route::resource('supplier', SupplierController::class);
 });
 
+// Form FAQ
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/faq', [BantuanController::class, 'index'])->name('faq.index');
     Route::put('/faq/{id}', [BantuanController::class, 'update'])->name('faq.update');
