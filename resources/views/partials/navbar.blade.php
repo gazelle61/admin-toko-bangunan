@@ -15,7 +15,7 @@
     <ul class="navbar-nav ml-auto">
         <!-- Navbar Search -->
         <li class="nav-item">
-            <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+            <a class="nav-link" data-widget="navbar-search" href="admin.logout" role="button">
             <i class="fas fa-user-circle">Admin</i>
             </a>
             {{-- <div class="navbar-search-block">

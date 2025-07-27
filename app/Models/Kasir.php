@@ -21,7 +21,7 @@ class Kasir extends Model
         'catatan'
     ];
 
-    public function detail_kasir()
+    public function details()
     {
         return $this->hasMany(DetailKasir::class);
     }

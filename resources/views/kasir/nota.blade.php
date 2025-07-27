@@ -1,38 +1,52 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h3>Nota Transaksi - {{ $kasir->invoice_kode }}</h3>
-    <p><strong>Tanggal:</strong> {{ $kasir->tgl_transaksi->format('d/m/Y H:i') }}</p>
-    <p><strong>Pembeli:</strong> {{ $kasir->pembeli ?? '-' }}</p>
+    <div class="container mt-4">
+        <div class="card shadow-sm p-4 rounded-4">
+            <h4 class="mb-4">Nota Transaksi - <strong>#{{ $kasir->invoice_kode }}</strong></h4>
+            <div class="mb-3">
+                <strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($kasir->tgl_transaksi)->format('d/m/Y H:i') }}<br>
+                <strong>Pembeli:</strong> {{ $kasir->pembeli ?? '-' }}
+            </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Barang</th>
-                <th>Harga</th>
-                <th>Jumlah</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($detail as $index => $item)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $item->barang->nama_barang }}</td>
-                <td>Rp{{ number_format($item->harga_satuan) }}</td>
-                <td>{{ $item->jumlah_beli }}</td>
-                <td>Rp{{ number_format($item->total_item) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Barang</th>
+                        <th>Harga</th>
+                        <th>Jumlah</th>
+                        <th>Total Item</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($detail as $i => $item)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $item->barang->nama_barang ?? '-' }}</td>
+                            <td>Rp{{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
+                            <td>{{ $item->jumlah_beli }}</td>
+                            <td>Rp{{ number_format($item->total_item, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-    <p><strong>Total Belanja:</strong> Rp{{ number_format($kasir->total_belanja) }}</p>
-    <p><strong>Bayar:</strong> Rp{{ number_format($kasir->jumlah_bayar) }}</p>
-    <p><strong>Kembali:</strong> Rp{{ number_format($kasir->jumlah_kembali) }}</p>
+            <div class="mt-3 text-end">
+                <h5>Total Belanja: <strong>Rp{{ number_format($kasir->total_belanja, 0, ',', '.') }}</strong></h5>
+                <p class="mb-1">Dibayar: Rp{{ number_format($kasir->jumlah_bayar, 0, ',', '.') }}</p>
+                <p class="mb-1">Kembalian: Rp{{ number_format($kasir->jumlah_kembali, 0, ',', '.') }}</p>
+                <p class="mb-1">Catatan: {{ $kasir->catatan ?? '-' }}</p>
+            </div>
 
-    <p><strong>Catatan:</strong> {{ $kasir->catatan }}</p>
-
-    <a href="{{ route('kasir.index') }}" class="btn btn-primary">Kembali ke Kasir</a>
+            <div class="d-flex gap-5 justify-content-end mt-4">
+                <a href="{{ route('kasir.index') }}" class="btn btn-secondary rounded-3 px-4 py-2"> <i
+                        class="bi bi-arrow-left-circle me-1"></i> Kembali ke Kasir</a><br>
+                <a href="{{ route('kasir.notaPdf', $kasir->invoice_kode) }}" class="btn btn-primary rounded-3 px-4 py-2"
+                    target="_blank">
+                    <i class="bi bi-printer-fill me-1"></i> Cetak Struk
+                </a>
+            </div>
+        </div>
+    </div>
 @endsection

@@ -56,7 +56,7 @@
                                     class="d-inline" onsubmit="return confirm('Yakin mau hapus?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-danger">Hapus</button>
+                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                                 </form>
                             </td>
                         </tr>
@@ -69,7 +69,7 @@
             </table>
         </div>
 
-        <div class="mt-3 d-flex justify-content-end">
+        <div class="d-flex justify-content-end mt-3">
             {{ $pembelians->withQueryString()->links() }}
         </div>
 
