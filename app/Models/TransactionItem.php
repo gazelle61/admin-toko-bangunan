@@ -12,7 +12,7 @@ class TransactionItem extends Model
     protected $table = 'transactions_items';
 
     protected $fillable = [
-        'transactions_id',
+        'transaction_id',
         'barang_id',
         'quantity',
         'harga_satuan',

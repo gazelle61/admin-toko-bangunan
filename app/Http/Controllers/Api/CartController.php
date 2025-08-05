@@ -157,4 +157,16 @@ class CartController extends Controller
             return response()->json(['message' => 'Checkout gagal.', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function riwayatUser()
+    {
+        $user = auth()->user();
+
+        $transactions = Transaction::with(['items.barang'])
+            ->where('users_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json($transactions);
+    }
 }

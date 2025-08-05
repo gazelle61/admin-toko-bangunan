@@ -30,19 +30,19 @@
                             <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}">
                         </div>
                         <div class="col-md-3">
-                            <label>Produk</label>
+                            <label>Barang</label>
                             <div class="input-group">
-                                <select name="barang_id" class="form-control">
-                                    <option value="">-- Pilih Produk --</option>
+                                <select id="barang_id" style="width: 100%" name="barang_id">
+                                    {{-- <option value="">-- Pilih Produk --</option>
                                     @foreach ($barangs as $item)
                                         <option value="{{ $item->id }}">
-                                            {{ $item->nama_barang }} - Rp{{ number_format($item->harga_satuan) }}
+                                            {{ $item->nama_barang }}
                                         </option>
                                     @endforeach
-                                </select>
-                                <div class="input-group-append">
+                                    <div class="input-group-append">
                                     <button class="btn btn-info" type="button"><i class="fas fa-search"></i></button>
-                                </div>
+                                </div> --}}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-2">
