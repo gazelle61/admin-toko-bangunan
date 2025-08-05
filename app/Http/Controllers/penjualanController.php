@@ -6,6 +6,7 @@ use App\Models\Barang;
 use App\Models\Kategori;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -70,6 +71,41 @@ class penjualanController extends Controller
         }
 
         return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil disimpan!');
+    }
+
+    public function storeOnline($transactionId)
+    {
+        $trx = Transaction::with('items')->findOrFail($transactionId);
+
+        $alreadySynced = Penjualan::where('source', 'online')->where('tgl_transaksi', $trx->created_at->toDateString())
+            ->where('total_pemasukan', $trx->total_harga)
+            ->where('kontak_pelanggan', $trx->no_telepon)
+            ->exists();
+
+        if ($alreadySynced) {
+            return back()->with('warning', 'Transaksi sudah pernah disimpan.');
+        }
+
+        $penjualan = Penjualan::create([
+            'users_id' => $trx['users_id'] ?? null,
+            'tgl_transaksi' => $trx->created_at,
+            'total_pemasukan' => $trx->total_harga,
+            'kontak_pelanggan' => $trx->no_telepon,
+            'bukti_transaksi' => $trx->bukti_transaksi ?? null,
+            'source' => 'online',
+        ]);
+
+        foreach ($trx['detail'] as $item) {
+            PenjualanDetail::create([
+                'penjualan_id' => $penjualan->id,
+                'barang_id' => $item['barang_id'],
+                'kategori_id' => $item['kategori_id'],
+                'jumlah' => $item['jumlah'],
+                'harga_satuan' => $item['harga_satuan'],
+            ]);
+        }
+
+        return back()->with('success', 'Transaksi berhasil disimpan!');
     }
 
     public function edit($id)

@@ -9,6 +9,25 @@ use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
+    public function search(Request $request)
+    {
+        $search = $request->q;
+
+        $barangs = Barang::where('nama_barang', 'like', '%' . $search . '%')
+            ->select('id', 'nama_barang', 'stok')
+            ->limit(10)
+            ->get();
+
+        $results = $barangs->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->nama_barang . ' - Stok ' . $item->stok
+            ];
+        });
+
+        return response()->json($results);
+    }
+
     public function index(Request $request)
     {
         $query = Barang::with('kategori');

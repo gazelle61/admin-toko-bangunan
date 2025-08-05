@@ -52,7 +52,6 @@ Route::apiResource('barang', BarangController::class);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/penjualan', [PenjualanController::class, 'index']);
     Route::post('/penjualan', [PenjualanController::class, 'store']);
-    Route::get('/penjualan/riwayat-transaksi', [PenjualanController::class, 'riwayatUser']);
     Route::get('/penjualan/{id}', [PenjualanController::class, 'show']);
     //Route::put('/penjualan/{penjualan}', [PenjualanController::class, 'update']);
     //Route::delete('/penjualan/{penjualan}', [PenjualanController::class, 'destroy']);
@@ -64,4 +63,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/cart/{id}', [CartController::class, 'update']);
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
+    Route::get('/cart/riwayat-transaksi', [CartController::class, 'riwayatUser']);
 });

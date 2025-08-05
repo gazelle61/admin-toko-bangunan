@@ -59,17 +59,6 @@ class PenjualanController extends Controller
         ], 201);
     }
 
-    public function riwayatUser(Request $request)
-    {
-        $user = $request->user();
-        $penjualan = Penjualan::with('detail.barang', 'detail.kategori')
-            ->where('users_id', $user->id)
-            ->orderByDesc('tgl_transaksi')
-            ->get();
-
-        return response()->json($penjualan);
-    }
-
     /**
      * Display the specified resource.
      */

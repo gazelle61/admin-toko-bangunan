@@ -53,9 +53,13 @@ Route::prefix('admin')->group(function () {
     Route::get('kasir/nota/{invoice}/pdf', [KasirController::class, 'notaPdf'])->name('kasir.notaPdf');
 });
 
+Route::get('/admin/barang/search', [BarangController::class, 'search'])->name('barang.search');
+
 // PENJUALAN
 Route::prefix('admin')->group(function () {
     Route::resource('penjualan', penjualanController::class);
+
+    Route::get('/penjualan/salin/{transactionId}', [penjualanController::class, 'storeOnline'])->name('penjualan.storeOnline');
 });
 
 // BARANG
