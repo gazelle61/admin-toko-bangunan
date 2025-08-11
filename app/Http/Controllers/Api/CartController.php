@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Barang;
 use App\Models\CartItem;
+use App\Models\Penjualan;
+use App\Models\PenjualanDetail;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
@@ -40,12 +42,26 @@ class CartController extends Controller
         $qty = $request->quantity;
         $subtotal = $harga * $qty;
 
+        if ($qty > $barang->stok) {
+            return response()->json([
+                'message' => 'Stok barang tidak mencukupi. Stok tersedia: ' . $barang->stok
+            ], 400);
+        }
+
+        $subtotal = $harga * $qty;
+
         $cartItem = CartItem::where('users_id', Auth::id())
             ->where('barang_id', $barang->id)
             ->where('status_cart', 'active')
             ->first();
 
         if ($cartItem) {
+            if (($cartItem->quantity + $qty) > $barang->stok) {
+                return response()->json([
+                    'message' => 'Stok barang tidak mencukupi untuk menambah jumlah ini. Stok tersedia: ' . $barang->stok
+                ], 400);
+            }
+
             $cartItem->quantity += $qty;
             $cartItem->total_harga = $cartItem->quantity * $cartItem->harga_satuan;
             $cartItem->save();
@@ -71,7 +87,14 @@ class CartController extends Controller
         $item = CartItem::where('id', $id)
             ->where('users_id', Auth::id())
             ->where('status_cart', 'active')
+            ->with('barang')
             ->firstOrFail();
+
+        if ($request->quantity > $item->barang->stok) {
+            return response()->json([
+                'message' => 'Stok barang tidak mencukupi. Stok tersedia:' . $item->barang->stok
+            ], 400);
+        }
 
         $item->quantity = $request->quantity;
         $item->total_harga = $item->harga_satuan * $item->quantity;
@@ -100,7 +123,13 @@ class CartController extends Controller
             'alamat_pengiriman' => 'required|string',
             'metode_pembayaran' => 'required|string',
             'ongkir' => 'nullable|numeric',
+            'bukti_transaksi' => 'sometimes|required|file',
         ]);
+
+        $buktiPath = null;
+        if ($request->hasFile('bukti_transaksi')) {
+            $buktiPath = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
+        }
 
         $userId = Auth::id();
 
@@ -111,6 +140,13 @@ class CartController extends Controller
 
         if ($cartitems->isEmpty()) {
             return response()->json(['message' => 'Keranjang kosong.'], 400);
+        }
+        foreach ($cartitems as $item) {
+            if ($item->quantity > $item->barang->stok) {
+                return response()->json([
+                    'message' => "Stok barang {$item->barang->nama_barang} tidak mencukupi. Stok tersedia: {$item->barang->stok}"
+                ], 400);
+            }
         }
 
         DB::beginTransaction();
@@ -127,8 +163,11 @@ class CartController extends Controller
                 'ongkir' => $request->ongkir ?? 0,
                 'total_harga' => $totalHarga,
                 'status_transactions' => 'pending',
+                'bukti_transaksi' => $buktiPath,
                 'created_at' => now(),
             ]);
+
+            $this->salinKePenjualan($transaksi);
 
             foreach ($cartitems as $item) {
                 TransactionItem::create([
@@ -162,11 +201,73 @@ class CartController extends Controller
     {
         $user = auth()->user();
 
-        $transactions = Transaction::with(['items.barang'])
+        $transactions = Transaction::with([
+            'items.barang:id,nama_barang,harga',
+        ])
             ->where('users_id', $user->id)
             ->orderByDesc('created_at')
-            ->get();
+            ->get()
+            ->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'tgl_transaksi' => $transaction->created_at->format('d F Y'),
+                    'nama_penerima' => $transaction->nama_penerima,
+                    'metode_pembayaran' => $transaction->metode_pembayaran,
+                    'bukti_transaksi' => $transaction->bukti_transaksi
+                        ? asset('storage/' . $transaction->bukti_transaksi)
+                        : null,
+                    'status' => [
+                        'kode' => $transaction->status_transactions,
+                        'label' => $this->statusLabel($transaction->status_transactions)
+                    ],
+                    'total_harga' => $transaction->total_harga,
+                    'barang' => $transaction->items->map(function ($item) {
+                        return [
+                            'nama_barang' => $item->barang->nama_barang,
+                            'quantity' => $item->quantity,
+                            'harga_satuan' => $item->barang->harga,
+                            'subtotal' => $item->quantity * $item->barang->harga,
+                        ];
+                    }),
+                ];
+            });
 
         return response()->json($transactions);
+    }
+
+    public function statusLabel($status)
+    {
+        $labels = [
+            'pending' => 'Menunggu Pembayaran',
+            'dibayar' => 'Telah dibayar',
+            'selesai' => 'Selesai',
+            'batal' => 'Dibatalkan',
+        ];
+
+        return $labels[$status] ?? $status;
+    }
+
+    public function salinKePenjualan(Transaction $transactions)
+    {
+        $transactions->load('items.barang');
+
+        $penjualan = Penjualan::create([
+            'users_id' => $transactions->users_id,
+            'tgl_transaksi' => now(),
+            'total_pemasukan' => $transactions->total_harga + $transactions->ongkir,
+            'kontak_pelanggan' => $transactions->no_telepon,
+            'bukti_transaksi' => $transactions->bukti_transaksi,
+            'source' => 'online',
+        ]);
+
+        foreach ($transactions->items as $item) {
+            PenjualanDetail::create([
+                'penjualan_id' => $penjualan->id,
+                'barang_id' => $item->barang_id,
+                'kategori_id' => $item->barang->kategori_id ?? null,
+                'jumlah' => $item->quantity,
+                'harga_satuan' => $item->harga_satuan,
+            ]);
+        }
     }
 }

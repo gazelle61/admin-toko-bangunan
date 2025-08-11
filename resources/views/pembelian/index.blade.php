@@ -21,7 +21,6 @@
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>
-                        <th>Bukti Transaksi</th>
                         <th>Tanggal Transaksi</th>
                         <th>Nama Supplier</th>
                         <th>Kategori Barang</th>
@@ -35,21 +34,15 @@
                     @forelse ($pembelians as $pembelian)
                         <tr>
                             <td class="text-center">{{ $loop->iteration }}</td>
-                            <td class="text-center">
-                                @if ($pembelian->bukti_transaksi)
-                                    <img src="{{ Storage::url($pembelian->bukti_transaksi) }}" alt="bukti_transaksi"
-                                        width="100">
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
                             <td>{{ $pembelian->tgl_transaksi }}</td>
                             <td>{{ $pembelian->supplier->nama_supplier ?? '-' }}</td>
-                            <td>{{ $pembelian->barang->nama_barang ?? '-' }}</td>
                             <td>{{ $pembelian->kategori->nama_kategori ?? '-' }}</td>
+                            <td>{{ $pembelian->nama_barang ?? '-' }}</td>
                             <td>{{ $pembelian->jumlah_pembelian }}</td>
                             <td>Rp{{ number_format($pembelian->harga, 0, ',', '.') }}</td>
                             <td class="text-center">
+                                <a href="{{ route('pembelian.show', $pembelian->id) }}"
+                                    class="btn btn-info btn-sm">Detail</a>
                                 <a href="{{ route('pembelian.edit', $pembelian->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
                                 <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST"

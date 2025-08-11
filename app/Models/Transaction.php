@@ -20,6 +20,7 @@ class Transaction extends Model
         'ongkir',
         'metode_pembayaran',
         'status_transactions',
+        'bukti_transaksi',
     ];
 
     public function users()

@@ -29,12 +29,42 @@
                         @enderror
                     </div>
 
+                    {{-- PILIH SUPPLIER --}}
                     <div class="form-group mb-3">
-                        <label class="fw-semibold">Nama Supplier</label>
-                        <input type="text" name="supplier_id"
-                            class="form-control rounded-3 @error('supplier_id') is-invalid @enderror"
-                            value="{{ old('supplier_id') }}">
+                        <label class="fw-semibold">Pilih Supplier</label>
+                        <select name="supplier_id" id="supplierSelect"
+                            class="form-control rounded-3 @error('supplier_id') is-invalid @enderror">
+                            <option value="">--Pilih Supplier--</option>
+                            @foreach ($supplier as $s)
+                                <option value="{{ $s->id }}" data-barang="{{ $s->barang_supplyan }}"
+                                    {{ old('supplier_id') == $s->id ? 'selected' : '' }}>
+                                    {{ $s->nama_supplier }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('supplier_id')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- PILIH BARANG DARI SUPPLIER --}}
+                    <div class="form-group mb-3">
+                        <label class="fw-semibold">Barang dari Supplier</label>
+                        <select name="nama_barang" id="barangSelect"
+                            class="form-control rounded-3 @error('nama_barang') is-invalid @enderror">
+                            <option value="">--Pilih Barang--</option>
+                        </select>
+                        @error('nama_barang')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="fw-semibold">Jumlah Pembelian</label>
+                        <input type="number" name="jumlah_pembelian"
+                            class="form-control rounded-3 @error('jumlah_pembelian') is-invalid @enderror"
+                            value="{{ old('jumlah_pembelian') }}">
+                        @error('jumlah_pembelian')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
@@ -49,30 +79,6 @@
                             @endforeach
                         </select>
                         @error('kategori_id')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="fw-semibold">Barang yang di Supply</label>
-                        <select name="supplier_id"
-                            class="form-control rounded-3 @error('supplier_id') is-invalid @enderror">
-                            @foreach ($supplier as $s)
-                                <option value="{{ $s->id }}" {{ old('supplier_id') == $k->id ? 'selected' : '' }}>
-                                    {{ $s->barang_supplyan }}</option>
-                            @endforeach
-                        </select>
-                        @error('supplier_id')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="fw-semibold">Jumalah Pembelian</label>
-                        <input type="number" name="jumlah_pembelian"
-                            class="form-control rounded-3 @error('jumlah_pembelian') is-invalid @enderror"
-                            value="{{ old('jumlah_pembelian') }}">
-                        @error('jumlah_pembelian')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
@@ -98,3 +104,48 @@
     </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const supplierSelect = document.getElementById("supplierSelect");
+            const barangSelect = document.getElementById("barangSelect");
+            const oldSupplier = "{{ old('supplier_id') }}";
+            const oldBarang = "{{ old('nama_barang') }}";
+
+            supplierSelect.addEventListener("change", function() {
+                const selected = this.options[this.selectedIndex];
+                const barangData = selected.getAttribute("data-barang");
+
+                // Reset opsi
+                barangSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+
+                if (barangData) {
+                    let barangList;
+
+                    try {
+                        barangList = JSON.parse(barangData); // coba parse JSON
+                    } catch (e) {
+                        barangList = barangData.split(','); // fallback: split koma
+                    }
+
+                    barangList.forEach(barang => {
+                        const option = document.createElement("option");
+                        option.value = barang.trim();
+                        option.text = barang.trim();
+                        if (barang.trim() === oldBarang) {
+                            option.selected = true;
+                        }
+                        barangSelect.appendChild(option);
+                    });
+                }
+            });
+
+            // Trigger auto select jika sebelumnya ada value
+            if (oldSupplier) {
+                supplierSelect.value = oldSupplier;
+                supplierSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+@endpush

@@ -164,6 +164,12 @@ class penjualanController extends Controller
         return redirect()->route('penjualan.index')->with('success', 'Data berhasil diupdate!');
     }
 
+    public function show($id)
+    {
+        $penjualan = Penjualan::findOrFail($id);
+        return view('penjualan.show', compact('penjualan'));
+    }
+
     public function destroy($id)
     {
         $penjualan = Penjualan::findOrFail($id);

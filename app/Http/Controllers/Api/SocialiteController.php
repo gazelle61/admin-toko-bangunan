@@ -32,12 +32,11 @@ class SocialiteController extends Controller
 
             $token = $user->createToken('google-login')->plainTextToken;
 
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
-            ]);
+            $frontendUrl = 'https://tbnoto19.rplrus.com/#token=' . $token;
+
+            return redirect()->away($frontendUrl);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return redirect()->away('https://tbnoto19.rplrus.com/masuk?error=' . urlencode($e->getMessage()));
         }
     }
 }
