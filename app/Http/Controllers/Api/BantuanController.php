@@ -3,24 +3,24 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Faq;
+use App\Models\Bantuan;
 use Illuminate\Http\Request;
 
 class BantuanController extends Controller
 {
     public function index()
     {
-        return response()->json(Faq::all());
+        return response()->json(Bantuan::all());
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'pertanyaan' => 'required|string',
-            'jawaban' => 'string',
+            'jawaban' => 'required|string',
         ]);
 
-        $bantuan = Faq::create($validated);
+        $bantuan = Bantuan::create($request->only('pertanyaan', 'jawaban'));
 
         return response()->json([
             'message' => 'Bantuan berhasil ditambahkan!',
@@ -28,27 +28,39 @@ class BantuanController extends Controller
         ], 201);
     }
 
-    public function show(Faq $bantuan)
+    public function show($id)
     {
+        $bantuan = Bantuan::find($id);
+        if (!$bantuan) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
         return response()->json($bantuan);
     }
 
-    public function update(Request $request, Faq $bantuan)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'pertanyaan' => 'required|string',
-            'jawaban' => 'string',
+        $bantuan = Bantuan::find($id);
+        if (!$bantuan) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $bantuan->update($request->only('pertanyaan', 'jawaban'));
+
+        return response()->json([
+            'message' => 'Bantuan berhasil diperbarui',
+            'data' => $bantuan
         ]);
-
-        $bantuan->update($validated);
-
-        return response()->json($bantuan);
     }
 
-    public function destroy(Faq $bantuan)
+    public function destroy($id)
     {
+        $bantuan = Bantuan::find($id);
+        if (!$bantuan) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
         $bantuan->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Bantuan berhasil dihapus']);
     }
 }

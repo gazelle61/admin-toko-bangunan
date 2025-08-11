@@ -15,7 +15,7 @@ class Pembelian extends Model
         'supplier_id',
         'tgl_transaksi',
         'kategori_id',
-        'barang_id',
+        'nama_barang',
         'jumlah_pembelian',
         'harga',
         'bukti_transaksi',
@@ -29,10 +29,5 @@ class Pembelian extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
-    }
-
-    public function barang()
-    {
-        return $this->belongsTo(Barang::class);
     }
 }

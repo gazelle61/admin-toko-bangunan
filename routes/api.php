@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\TopController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,8 +43,14 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/faq', [FaqController::class, 'store']);
 
 // Bantuan
-Route::apiResource('bantuan', BantuanController::class);
+Route::get('/bantuan', [BantuanController::class, 'index']);
+Route::post('/bantuan', [BantuanController::class, 'store']);
+Route::get('/bantuan/{id}', [BantuanController::class, 'show']);
+Route::put('/bantuan/{id}', [BantuanController::class, 'update']);
+Route::delete('/bantuan/{id}', [BantuanController::class, 'destroy']);
 
+//Produk Unggulan
+Route::get('/produk-unggulan', [TopController::class, 'topProducts']);
 // Data
 Route::apiResource('kategori', KategoriController::class);
 

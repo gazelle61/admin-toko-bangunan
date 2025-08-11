@@ -25,12 +25,10 @@
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>
-                        <th>Bukti Transaksi</th>
                         <th>Tanggal Transaksi</th>
                         <th>Total Pemasukan</th>
                         <th>Pelanggan</th>
                         <th>Sumber Penjualan</th>
-                        <th>Detail Penjualan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -39,31 +37,13 @@
                         <tr>
                             <td class="text-center">
                                 {{ $loop->iteration + ($penjualans->currentPage() - 1) * $penjualans->perPage() }}</td>
-                            <td class="text-center">
-                                @if ($penjualan->bukti_transaksi)
-                                    <img src="{{ Storage::url($penjualan->bukti_transaksi) }}" alt="bukti_transaksi"
-                                        width="100">
-                                    <span class="badge badge-success mt-1">Bukti valid</span>
-                                @else
-                                    <span class="badge badge-danger">Bukti tidak valid</span>
-                                @endif
-                            </td>
                             <td>{{ $penjualan->tgl_transaksi }}</td>
                             <td>Rp{{ number_format($penjualan->total_pemasukan, 0, ',', '.') }}</td>
                             <td>{{ $penjualan->kontak_pelanggan ?? '-' }}</td>
                             <td>{{ ucfirst($penjualan->source) }}</td>
-                            <td class="mb-0 text-left">
-                                <ul class="mb-0 text-left">
-                                    @foreach ($penjualan->detail as $d)
-                                        <li>
-                                            {{ $d->barang->nama_barang ?? '-' }}
-                                            {{ $d->jumlah }} x Rp{{ number_format($d->harga_satuan, 0, ',', '.') }}
-                                            {{ $d->kategori->nama_kategori ?? '-' }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </td>
                             <td class="text-center">
+                                <a href="{{ route('penjualan.show', $penjualan->id) }}"
+                                    class="btn btn-info btn-sm">Detail</a>
                                 <a href="{{ route('penjualan.edit', $penjualan->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
                             </td>

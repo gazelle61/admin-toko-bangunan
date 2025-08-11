@@ -101,6 +101,12 @@ class BarangController extends Controller
         return redirect()->route('barang.index')->with('success', 'Barang berhasil diperbarui!');
     }
 
+    public function show($id)
+    {
+        $barang = Barang::findOrFail($id);
+        return view('barang.show', compact('barang'));
+    }
+
     public function destroy($id)
     {
         $barang = Barang::findOrFail($id);

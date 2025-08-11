@@ -21,13 +21,11 @@
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>
-                        <th>Foto Barang</th>
                         <th>Nama Barang</th>
                         <th>Kategori Barang</th>
                         <th>Ukuran</th>
                         <th>Harga</th>
                         <th>Stok</th>
-                        <th>Deskripsi</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -35,20 +33,13 @@
                     @forelse ($barangs as $barang)
                         <tr>
                             <td class="text-center">{{ $loop->iteration }}</td>
-                            <td class="text-center">
-                                @if ($barang->foto_barang)
-                                    <img src="{{ Storage::url($barang->foto_barang) }}" alt="foto_barang" width="100">
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
                             <td>{{ $barang->nama_barang }}</td>
                             <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                             <td>{{ $barang->ukuran }}</td>
                             <td>Rp{{ number_format($barang->harga, 0, ',', '.') }}</td>
                             <td>{{ $barang->stok }}</td>
-                            <td>{{ $barang->deskripsi }}</td>
                             <td class="text-center">
+                                <a href="{{ route('barang.show', $barang->id) }}" class="btn btn-info btn-sm">Detail</a>
                                 <a href="{{ route('barang.edit', $barang->id) }}" class="btn btn-sm btn-warning">Edit</a>
                                 <form action="{{ route('barang.destroy', $barang->id) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('Yakin mau hapus?')">

@@ -5,7 +5,7 @@
         <div class="card shadow-sm rounded-4">
             <div class="card-body">
                 <h4 class="mb-4 fw-bold">Edit Data</h4>
-                <form action="{{ route('supplier.update', $supplier->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('pembelian.update', $pembelian->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -28,12 +28,32 @@
                         @enderror
                     </div>
 
+                    {{-- PILIH SUPPLIER --}}
                     <div class="form-group mb-3">
-                        <label class="fw-semibold">Nama Supplier</label>
-                        <input type="text" name="supplier_id"
-                            class="form-control rounded-3 @error('supplier_id') is-invalid @enderror"
-                            value="{{ old('supplier_id') }}">
+                        <label class="fw-semibold">Pilih Supplier</label>
+                        <select name="supplier_id" id="supplierSelect"
+                            class="form-control rounded-3 @error('supplier_id') is-invalid @enderror">
+                            <option value="">-- Pilih Supplier --</option>
+                            @foreach ($supplier as $s)
+                                <option value="{{ $s->id }}" data-barang="{{ $s->barang_supplyan }}"
+                                    {{ old('supplier_id', $pembelian->supplier_id) == $s->id ? 'selected' : '' }}>
+                                    {{ $s->nama_supplier }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('supplier_id')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- PILIH BARANG --}}
+                    <div class="form-group mb-3">
+                        <label class="fw-semibold">Barang dari Supplier</label>
+                        <select name="nama_barang" id="barangSelect"
+                            class="form-control rounded-3 @error('nama_barang') is-invalid @enderror">
+                            <option value="">-- Pilih Barang --</option>
+                        </select>
+                        @error('nama_barang')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
@@ -49,21 +69,6 @@
                             @endforeach
                         </select>
                         @error('kategori_id')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="fw-semibold">Barang yang di Supply</label>
-                        <select name="supplier_id"
-                            class="form-control rounded-3 @error('supplier_id') is-invalid @enderror">
-                            @foreach ($supplier as $s)
-                                <option value="{{ $s->id }}"
-                                    {{ old('supplier_id', $supplier->supplier_id) == $k->id ? 'selected' : '' }}>
-                                    {{ $s->barang_supplyan }}</option>
-                            @endforeach
-                        </select>
-                        @error('supplier_id')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
@@ -90,7 +95,7 @@
             </div>
 
             <div class="d-flex justify-content-end gap-2">
-                <a href="{{ route('supplier.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
+                <a href="{{ route('pembelian.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
                 <hr>
                 <button type="submit" class="btn btn-dark rounded-pill px-4">Simpan</button>
             </div>
@@ -99,3 +104,45 @@
     </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const supplierSelect = document.getElementById("supplierSelect");
+            const barangSelect = document.getElementById("barangSelect");
+            const oldSupplier = "{{ old('supplier_id', $pembelian->supplier_id) }}";
+            const oldBarang = "{{ old('nama_barang', $pembelian->nama_barang) }}";
+
+            supplierSelect.addEventListener("change", function() {
+                const selected = this.options[this.selectedIndex];
+                const barangData = selected.getAttribute("data-barang");
+
+                barangSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+
+                if (barangData) {
+                    let barangList;
+                    try {
+                        barangList = JSON.parse(barangData);
+                    } catch (e) {
+                        barangList = barangData.split(',');
+                    }
+
+                    barangList.forEach(barang => {
+                        const option = document.createElement("option");
+                        option.value = barang.trim();
+                        option.text = barang.trim();
+                        if (barang.trim() === oldBarang) {
+                            option.selected = true;
+                        }
+                        barangSelect.appendChild(option);
+                    });
+                }
+            });
+
+            if (oldSupplier) {
+                supplierSelect.value = oldSupplier;
+                supplierSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+@endpush

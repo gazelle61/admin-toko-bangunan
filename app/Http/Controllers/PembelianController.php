@@ -1,8 +1,7 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
-use App\Models\Barang;
 use App\Models\Kategori;
 use App\Models\Pembelian;
 use App\Models\Supplier;
@@ -13,7 +12,7 @@ class PembelianController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pembelian::with('supplier', 'kategori', 'barang');
+        $query = Pembelian::with('supplier', 'kategori');
 
         if ($request->has('search') && $request->search != '') {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
@@ -26,8 +25,8 @@ class PembelianController extends Controller
 
     public function create()
     {
-        $supplier = Supplier::with('supplier_id');
-        $kategori = Kategori::with('kategori_id');
+        $supplier = Supplier::all();
+        $kategori = Kategori::all();
         return view('pembelian.create', compact('supplier', 'kategori'));
     }
 
@@ -37,10 +36,10 @@ class PembelianController extends Controller
             'supplier_id' => 'required|exists:supplier,id',
             'tgl_transaksi' => 'required|date',
             'kategori_id' => 'required|exists:kategori,id',
-            'supplier_id' => 'required|exists:supplier,id',
+            'nama_barang' => 'required|string|max:255',
             'jumlah_pembelian' => 'required|integer',
             'harga' => 'required|numeric',
-            'bukti_transaksi' => 'required|string',
+            'bukti_transaksi' => 'nullable|image',
         ]);
 
         if ($request->hasFile('bukti_transaksi')) {
@@ -55,8 +54,8 @@ class PembelianController extends Controller
     public function edit($id)
     {
         $pembelian = Pembelian::findOrFail($id);
-        $supplier = Supplier::with('supplier_id');
-        $kategori = Kategori::with('kategori_id');
+        $supplier = Supplier::all();
+        $kategori = Kategori::all();
 
         return view('pembelian.edit', compact('pembelian', 'supplier', 'kategori'));
     }
@@ -69,10 +68,10 @@ class PembelianController extends Controller
             'supplier_id' => 'required|exists:supplier,id',
             'tgl_transaksi' => 'required|date',
             'kategori_id' => 'required|exists:kategori,id',
-            'supplier_id' => 'required|exists:supplier,id',
+            'nama_barang' => 'required|string|max:255',
             'jumlah_pembelian' => 'required|integer',
             'harga' => 'required|numeric',
-            'bukti_transaksi' => 'required|string',
+            'bukti_transaksi' => 'nullable|image',
         ]);
 
         if ($request->hasFile('bukti_transaksi')) {
@@ -85,6 +84,12 @@ class PembelianController extends Controller
         $pembelian->update($validated);
 
         return redirect()->route('pembelian.index')->with('success', 'Data berhasil diperbarui');
+    }
+
+    public function show($id)
+    {
+        $pembelian = Pembelian::findOrFail($id);
+        return view('pembelian.show', compact('pembelian'));
     }
 
     public function destroy($id)

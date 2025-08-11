@@ -7,7 +7,7 @@ use App\Models\DetailKasir;
 use App\Models\Kasir;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
-use Barryvdh\DomPDF\Facade\PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -167,10 +167,10 @@ class KasirController extends Controller
     {
         $kasir = Kasir::with(['details.barang'])->where('invoice_kode', $invoice)->firstOrFail();
 
-        $pdf = PDF::loadView('kasir.nota_pdf', [
+        $pdf = Pdf::loadView('kasir.nota_pdf', [
             'kasir' => $kasir,
             'detail' => $kasir->details,
-        ])->setPaper('A5', 'portrait');
+        ])->setPaper([0,0,226.77,600], 'portrait');
 
         return $pdf->stream("Invoice_{$kasir->invoice_kode}.pdf");
     }
