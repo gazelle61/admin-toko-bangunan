@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +9,13 @@
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
     <title>Admin Login</title>
 </head>
+
 <body class="hold-transition login-page">
 
     <div class="login-box">
         <div class="card card-outline card-primary shadow">
             <div class="card-header text-center">
-                <a href="{{ route('admin.login') }}" class="h4"> <b>Admin</b>  NOTO 19</a>
+                <a href="{{ route('admin.login') }}" class="h4"> <b>Admin</b> NOTO 19</a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Login untuk masuk ke dashboard</p>
@@ -22,7 +24,8 @@
                     @csrf
 
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email') }}" required>
+                        <input type="email" name="email" class="form-control" placeholder="Email"
+                            value="{{ old('email') }}" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -34,7 +37,8 @@
                     @enderror
 
                     <div class="input-group mb-3 mt-2">
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                        <input type="password" name="password" id="password" class="form-control"
+                            placeholder="Password" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <i class="fas fa-lock"></i>
@@ -56,8 +60,9 @@
         </div>
     </div>
 
-<script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
+    <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
 </body>
+
 </html>

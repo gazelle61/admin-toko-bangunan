@@ -15,7 +15,7 @@ class Supplier extends Model
         'nama_supplier',
         'kategori_id',
         'barang_supplyan',
-        'kontak_supplier',
+        'kontak_supplier', //varchar 15
         'alamat_supplier',
     ];
 
@@ -24,7 +24,7 @@ class Supplier extends Model
         return $this->belongsTo(Kategori::class);
     }
 
-    public function pembelian()
+    public function pembelians()
     {
         return $this->hasMany(Pembelian::class);
     }

@@ -1,28 +1,28 @@
 <x-mail::message>
-# Halo {{ $faq->nama }}
+    # Halo {{ $faq->nama }}
 
-Terima kasih telah mengirimkan pertanyaan kepada kami melalui website **NOTO 19**.
+    Terima kasih telah mengirimkan pertanyaan kepada kami melalui website **NOTO 19**.
 
----
+    ---
 
-### ❓ Pertanyaan:
+    ### ❓ Pertanyaan:
 
-> _{{ $faq->pertanyaan }}_
+    > _{{ $faq->pertanyaan }}_
 
----
+    ---
 
-### Berikut jawaban dari tim NOTO 19:
+    ### Berikut jawaban dari tim NOTO 19:
 
-> **{{ $faq->jawaban }}**
+    > **{{ $faq->jawaban }}**
 
----
+    ---
 
-Jika ada pertanyaan lain, jangan ragu untuk menghubungi kembali melalui website kami.
+    Jika ada pertanyaan lain, jangan ragu untuk menghubungi kembali melalui website kami.
 
-<x-mail::button :url="'/'">
-Kunjungi Webiste
-</x-mail::button>
+    <x-mail::button :url="'/'">
+        Kunjungi Webiste
+    </x-mail::button>
 
-Terima kasih,<br>
-**{{ config('app.name') }}** Team NOTO 19
+    Terima kasih,<br>
+    **{{ config('app.name') }}** Team NOTO 19
 </x-mail::message>

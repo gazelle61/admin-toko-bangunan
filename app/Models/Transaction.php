@@ -16,10 +16,10 @@ class Transaction extends Model
         'nama_penerima',
         'no_telepon',
         'alamat_pengiriman',
-        'total_harga',
-        'ongkir',
+        'total_harga', //decimal 15,2
+        'ongkir', //decimal 15,2
         'metode_pembayaran',
-        'status_transactions',
+        'status_transactions', //null
         'bukti_transaksi',
     ];
 

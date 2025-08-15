@@ -16,7 +16,7 @@
         <!-- Navbar Search -->
         <li class="nav-item">
             <a class="nav-link" data-widget="navbar-search" href="admin.logout" role="button">
-            <i class="fas fa-user-circle">Admin</i>
+                <i class="fas fa-user-circle">Admin</i>
             </a>
             {{-- <div class="navbar-search-block">
             <form class="form-inline">

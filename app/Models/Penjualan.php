@@ -14,20 +14,20 @@ class Penjualan extends Model
     protected $with = ['detail.barang', 'detail.kategori'];
 
     protected $fillable = [
-        'users_id',
+        'users_id', //null
         'tgl_transaksi',
         'total_pemasukan',
-        'kontak_pelanggan',
+        'kontak_pelanggan', //varchar 15, null
         'bukti_transaksi',
         'source'
     ];
 
-    public function detail()
+    public function details()
     {
         return $this->hasMany(PenjualanDetail::class);
     }
 
-    public function user()
+    public function users()
     {
         return $this->belongsTo(Users::class);
     }

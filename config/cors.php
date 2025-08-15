@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://tbnoto19.rplrus.com/'],
+    'allowed_origins' => ['https://tbnoto19.rplrus.com'],
 
     'allowed_origins_patterns' => [],
 

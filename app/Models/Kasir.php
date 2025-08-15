@@ -12,12 +12,12 @@ class Kasir extends Model
     protected $table = 'kasir';
 
     protected $fillable = [
-        'tgl_transaksi',
-        'pembeli',
+        'tgl_transaksi', //datetime
+        'pembeli', //null
         'invoice_kode',
-        'total_belanja',
-        'jumlah_bayar',
-        'jumlah_kembali',
+        'total_belanja', //integer
+        'jumlah_bayar', //integer
+        'jumlah_kembali', //integer
         'catatan'
     ];
 

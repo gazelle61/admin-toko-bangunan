@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori;
 use App\Models\Pembelian;
 use App\Models\Supplier;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 

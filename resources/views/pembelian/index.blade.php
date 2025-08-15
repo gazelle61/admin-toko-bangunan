@@ -16,8 +16,8 @@
             </form>
         </div>
 
-        <div class="table-reponsive">
-            <table class="table table-bordered text-center align-midle">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>
@@ -33,7 +33,8 @@
                 <tbody>
                     @forelse ($pembelians as $pembelian)
                         <tr>
-                            <td class="text-center">{{ $loop->iteration }}</td>
+                            <td class="text-center">
+                                {{ $loop->iteration + ($pembelians->currentPage() - 1) * $pembelians->perPage() }}</td>
                             <td>{{ $pembelian->tgl_transaksi }}</td>
                             <td>{{ $pembelian->supplier->nama_supplier ?? '-' }}</td>
                             <td>{{ $pembelian->kategori->nama_kategori ?? '-' }}</td>

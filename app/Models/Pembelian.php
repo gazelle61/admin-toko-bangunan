@@ -15,7 +15,7 @@ class Pembelian extends Model
         'supplier_id',
         'tgl_transaksi',
         'kategori_id',
-        'nama_barang',
+        'nama_barang', //null
         'jumlah_pembelian',
         'harga',
         'bukti_transaksi',

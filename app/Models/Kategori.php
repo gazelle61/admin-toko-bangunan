@@ -16,12 +16,22 @@ class Kategori extends Model
         'foto_kategori'
     ];
 
+    public function penjualan_detail()
+    {
+        return $this->hasMany(PenjualanDetail::class);
+    }
+
+    public function pembelians()
+    {
+        return $this->hasMany(Pembelian::class);
+    }
+
     public function barangs()
     {
         return $this->hasMany(Barang::class);
     }
 
-    public function supplier()
+    public function suppliers()
     {
         return $this->hasMany(Supplier::class);
     }
