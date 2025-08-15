@@ -5,7 +5,8 @@
         <div class="card shadow-sm p-4 rounded-4">
             <h4 class="mb-4">Nota Transaksi - <strong>#{{ $kasir->invoice_kode }}</strong></h4>
             <div class="mb-3">
-                <strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($kasir->tgl_transaksi)->format('d/m/Y H:i') }}<br>
+                <strong>Tanggal:</strong>
+                {{ \Carbon\Carbon::parse($kasir->tgl_transaksi)->timezone('Asia/Jakarta')->translatedFormat('d F Y - H:i:s') }}<br>
                 <strong>Pembeli:</strong> {{ $kasir->pembeli ?? '-' }}
             </div>
 
@@ -14,7 +15,7 @@
                     <tr>
                         <th>#</th>
                         <th>Barang</th>
-                        <th>Harga</th>
+                        <th>Harga /pcs</th>
                         <th>Jumlah</th>
                         <th>Total Item</th>
                     </tr>

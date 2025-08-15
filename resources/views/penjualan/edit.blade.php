@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 
 @section('content')
     <div class="container mt-4">
@@ -86,7 +86,7 @@
                     </div>
 
                     <button type="button" class="btn btn-sm btn-outline-primary mb-4" id="tambah-detail"><i
-                            class="fas fa-plus-circle"></i> Tambah Barang</button> --}}
+                            class="fas fa-plus-circle"></i> Tambah Barang</button>
 
                     <div class="form-group mb-3">
                         <label class="fw-semibold">Total Pemasukan</label>
@@ -147,5 +147,5 @@
             document.getElementById('detail-wrapper').insertAdjacentHTML('beforeend', html);
             index++;
         });
-    </script> --}}
-@endsection
+    </script> 
+@endsection --}}

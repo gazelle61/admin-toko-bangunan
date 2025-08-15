@@ -102,7 +102,7 @@ class CartController extends Controller
             'alamat_pengiriman' => 'required|string',
             'metode_pembayaran' => 'required|string',
             'ongkir' => 'nullable|numeric',
-            'bukti_transaksi' => 'sometimes|required|file',
+            'bukti_transaksi' => 'required|file',
         ]);
 
         $buktiPath = null;
@@ -123,9 +123,16 @@ class CartController extends Controller
 
         DB::beginTransaction();
         try {
-            $totalBarang = $cartitems->sum('total_harga');
-            $totalHarga = $totalBarang + ($request->ongkir ?? 0);
+            $cartitems = CartItem::where('users_id', $userId)
+                ->where('status_cart', 'active')
+                ->with('barang.kategori')
+                ->get();
 
+            if ($cartitems->isEmpty()) {
+                return response()->json(['message' => 'Keranjang kosong.'], 400);
+            }
+
+            // Buat transaksi
             $transaksi = Transaction::create([
                 'users_id' => $userId,
                 'nama_penerima' => $request->nama_penerima,
@@ -133,17 +140,14 @@ class CartController extends Controller
                 'alamat_pengiriman' => $request->alamat_pengiriman,
                 'metode_pembayaran' => $request->metode_pembayaran,
                 'ongkir' => $request->ongkir ?? 0,
-                'total_harga' => $totalHarga,
+                'total_harga' => $cartitems->sum('total_harga') + ($request->ongkir ?? 0),
                 'status_transactions' => 'pending',
                 'bukti_transaksi' => $buktiPath,
-                'created_at' => now(),
             ]);
-
-            $this->salinKePenjualan($transaksi);
 
             foreach ($cartitems as $item) {
                 TransactionItem::create([
-                    'transactions_id' => $transaksi->id,
+                    'transaction_id' => $transaksi->id,
                     'barang_id' => $item->barang_id,
                     'quantity' => $item->quantity,
                     'harga_satuan' => $item->harga_satuan,
@@ -151,21 +155,17 @@ class CartController extends Controller
                 ]);
 
                 $item->barang->decrement('stok', $item->quantity);
-
                 $item->status_cart = 'checked_out';
                 $item->save();
             }
 
-            DB::commit();
+            // Sinkronisasi ke Penjualan
+            $this->syncToPenjualan($transaksi);
 
-            return response()->json([
-                'message' => 'Checkout berhasil.',
-                'transactions_id' => $transaksi->id,
-                'total' => $totalHarga
-            ]);
+            DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Checkout gagal.', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Checkout gagal', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -186,8 +186,8 @@ class CartController extends Controller
                     'nama_penerima' => $transaction->nama_penerima,
                     'metode_pembayaran' => $transaction->metode_pembayaran,
                     'bukti_transaksi' => $transaction->bukti_transaksi
-                        ?asset('storage/' . $transaction->bukti_transaksi)
-                        :null,
+                        ? asset('storage/' . $transaction->bukti_transaksi)
+                        : null,
                     'status' => [
                         'kode' => $transaction->status_transactions,
                         'label' => $this->statusLabel($transaction->status_transactions)
@@ -219,26 +219,31 @@ class CartController extends Controller
         return $labels[$status] ?? $status;
     }
 
-    public function salinKePenjualan(Transaction $transactions)
+    public function salinKePenjualan(Transaction $transaksi)
     {
-        $transactions->load('items.barang');
+        // Cegah duplikasi
+        if (Penjualan::where('transactions_id', $transaksi->id)->exists()) {
+            return;
+        }
 
         $penjualan = Penjualan::create([
-            'users_id' => $transactions->users_id,
-            'tgl_transaksi' => now(),
-            'total_pemasukan' => $transactions->total_harga + $transactions->ongkir,
-            'kontak_pelanggan' => $transactions->no_telepon,
-            'bukti_transaksi' => $transactions->bukti_transaksi,
+            'transactions_id' => $transaksi->id,
+            'users_id' => $transaksi->users_id,
+            'tgl_transaksi' => $transaksi->created_at,
+            'total_pemasukan' => $transaksi->total_harga,
+            'nama_penerima' => $transaksi->nama_penerima,
+            'kontak_pelanggan' => $transaksi->no_telepon,
+            'bukti_transaksi' => $transaksi->bukti_transaksi,
             'source' => 'online',
         ]);
 
-        foreach ($transactions->items as $item) {
+        foreach ($transaksi->items as $item) {
             PenjualanDetail::create([
                 'penjualan_id' => $penjualan->id,
                 'barang_id' => $item->barang_id,
-                'kategori_id' => $item->barang->kategori_id ?? null,
                 'jumlah' => $item->quantity,
                 'harga_satuan' => $item->harga_satuan,
+                'total_harga' => $item->total_harga,
             ]);
         }
     }

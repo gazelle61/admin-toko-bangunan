@@ -20,6 +20,14 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('kasir.index') }}"
+                        class="nav-link {{ request()->is('kasir/index') ? 'active' : '' }}">
+                        <i class="nav-icon far fa-cash-register"></i>
+                        <p>Kasir</p>
+                    </a>
+                </li>
+
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-wallet"></i>
@@ -31,16 +39,16 @@
 
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('kasir.index') }}" class="nav-link">
-                                <i class="far fa-cash-register nav-icon"></i>
-                                <p>Kasir</p>
+                            <a href="{{ route('penjualan.index') }}" class="nav-link">
+                                <i class="far fa-receipt nav-icon"></i>
+                                <p>Data Penjualan Kasir</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ route('penjualan.index') }}" class="nav-link">
+                            <a href="{{ route('online.index') }}" class="nav-link">
                                 <i class="far fa-receipt nav-icon"></i>
-                                <p>Data Penjualan</p>
+                                <p>Data Penjualan Web E-commerce</p>
                             </a>
                         </li>
 

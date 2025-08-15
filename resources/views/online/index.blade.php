@@ -10,15 +10,20 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        @if (session('warning'))
+            <div class="alert alert-warning">{{ session('warning') }}</div>
+        @endif
+
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <form method="GET" class="d-flex" style="max-width: 300px; width:100%;">
-                <input type="text" name="search" class="form-control rounded-pill" placeholder="Cari data ..."
+                <input type="text" name="search" class="form-control rounded-pill me-2" placeholder="Cari data ..."
                     value="{{ request('search') }}">
+                <button type="submit" class="btn btn-primary rounded-pill">Cari</button>
             </form>
         </div>
 
-        <div class="table-reponsive">
-            <table class="table table-bordered text-center align-midle">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>
@@ -32,20 +37,21 @@
                 <tbody>
                     @forelse ($penjualans as $penjualan)
                         <tr>
-                            <td class="text-center">
-                                {{ $loop->iteration + ($penjualans->currentPage() - 1) * $penjualans->perPage() }}</td>
+                            <td>
+                                {{ $loop->iteration + ($penjualans->currentPage() - 1) * $penjualans->perPage() }}
+                            </td>
                             <td>{{ \Carbon\Carbon::parse($penjualan->tgl_transaksi)->translatedFormat('d F Y') }}</td>
                             <td>Rp{{ number_format($penjualan->total_pemasukan, 0, ',', '.') }}</td>
-                            <td>{{ $penjualan->nama ?? '-' }}</td>
-                            <td>{{ ucfirst($penjualan->source) }}</td>
-                            <td class="text-center">
+                            <td>{{ $penjualan->nama_penerima ?? '-' }}</td>
+                            <td>{{ Str::title($penjualan->source) }}</td>
+                            <td>
                                 <a href="{{ route('penjualan.show', $penjualan->id) }}"
                                     class="btn btn-info btn-sm">Detail</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-muted">Tidak ada data.</td>
+                            <td colspan="6" class="text-center text-muted">Tidak ada data.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -55,6 +61,5 @@
         <div class="d-flex justify-content-end mt-3">
             {{ $penjualans->withQueryString()->links() }}
         </div>
-
     </div>
 @endsection

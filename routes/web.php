@@ -4,11 +4,13 @@ use App\Http\Controllers\Api\SocialiteController;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BantuanController;
+use App\Http\Controllers\Admin\OnlineController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\penjualanController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\OfflineController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -59,7 +61,16 @@ Route::get('/admin/barang/search', [BarangController::class, 'search'])->name('b
 Route::prefix('admin')->group(function () {
     Route::resource('penjualan', penjualanController::class);
 
-    Route::get('/penjualan/salin/{transactionId}', [penjualanController::class, 'storeOnline'])->name('penjualan.storeOnline');
+    Route::get('/penjualan/{id}/pdf', [penjualanController::class, 'cetakPDF'])->name('penjualan.pdf');
+});
+
+Route::prefix('admin')->group(function () {
+    Route::resource('offline', OnlineController::class);
+});
+
+// PEMBELIAN
+Route::prefix('admin')->group(function () {
+    Route::resource('pembelian', PembelianController::class);
 });
 
 // BARANG
@@ -70,11 +81,6 @@ Route::prefix('admin')->group(function () {
 // KATEGORI
 Route::prefix('admin')->group(function () {
     Route::resource('kategori', KategoriController::class);
-});
-
-// PEMBELIAN
-Route::prefix('admin')->group(function () {
-    Route::resource('pembelian', PembelianController::class);
 });
 
 // SUPPLIER

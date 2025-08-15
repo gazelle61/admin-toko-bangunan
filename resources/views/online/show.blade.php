@@ -69,7 +69,7 @@
                         </tr>
                         <tr>
                             <th>Pelanggan</th>
-                            <td>{{ $penjualan->kontak_pelanggan ?? '-' }}</td>
+                            <td>{{ $penjualan->nama_penerima ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Sumber Penjualan</th>
@@ -83,7 +83,6 @@
                                         <li>
                                             {{ $d->barang->nama_barang ?? '-' }}
                                             {{ $d->jumlah }} x Rp{{ number_format($d->harga_satuan, 0, ',', '.') }}
-                                            {{ $d->kategori->nama_kategori ?? '-' }}
                                         </li>
                                     @endforeach
                                 </ul>
@@ -92,8 +91,10 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ route('penjualan.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a><hr>
-                    <a href="{{ $pdfUrl }}" target="_blank" class="btn btn-outline-info rounded-pill px-4">Lihat Struk PDF</a>
+                    <a href="{{ route('penjualan.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
+                    <hr>
+                    <a href="{{ $pdfUrl }}" target="_blank" class="btn btn-outline-info rounded-pill px-4">Lihat Struk
+                        PDF</a>
                 </div>
             </div>
         </div>

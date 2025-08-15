@@ -2,57 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barang;
-use App\Models\DetailKasir;
+use Illuminate\Http\Request;
 use App\Models\Kasir;
+use App\Models\DetailKasir;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+use App\Models\Barang;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KasirController extends Controller
 {
+    // Menampilkan halaman kasir + list barang + keranjang
     public function index()
     {
         $barangs = Barang::all()
+            // Barang dengan stok > 0 ditaruh di atas
             ->sortByDesc(function ($barang) {
                 return $barang->stok > 0 ? 1 : 0;
             })
             ->values();
 
+        // Ambil keranjang dari session
         $keranjang = session()->get('keranjang', []);
+        // Hitung total belanja dari semua item di keranjang
         $totalBelanja = collect($keranjang)->sum('total_item');
 
         return view('kasir.index', compact('barangs', 'keranjang', 'totalBelanja'));
     }
 
+    // Menambahkan barang ke keranjang
     public function tambahKeranjang(Request $request)
     {
+        // Validasi input
         $request->validate([
             'barang_id' => 'required|exists:barang,id',
             'jumlah_beli' => 'required|integer|min:1',
         ]);
 
+        // Ambil data barang dari database
         $barang = Barang::findOrFail($request->barang_id);
 
+        // Cek stok kosong
         if ($barang->stok <= 0) {
             return back()->with('error', 'Barang ini sedang habis stoknya.');
         }
 
+        // Cek stok cukup atau tidak
         if ($barang->stok < $request->jumlah_beli) {
             return back()->with('error', 'Stok barang tidak mencukupi.');
         }
 
+        // Ambil keranjang yang sudah ada di session
         $keranjang = session('keranjang', []);
 
+        // Cari index barang di keranjang
         $index = collect($keranjang)->search(fn($item) => $item['barang_id'] == $barang->id);
 
         if ($index !== false) {
+            // Kalau barang sudah ada di keranjang, update jumlah beli dan totalnya
             $keranjang[$index]['jumlah_beli'] += $request->jumlah_beli;
-
             $keranjang[$index]['total_item'] = $keranjang[$index]['jumlah_beli'] * $barang->harga;
         } else {
+            // Kalau belum ada, masukkan sebagai item baru
             $keranjang[] = [
                 'barang_id' => $barang->id,
                 'nama_barang' => $barang->nama_barang,
@@ -62,21 +74,26 @@ class KasirController extends Controller
             ];
         }
 
+        // Kurangi stok barang di database
         $barang->decrement('stok', $request->jumlah_beli);
 
+        // Simpan stok yang sudah diambil sementara di session
         $stokSementara = session('stok_sementara', []);
         $stokSementara[$barang->id] = ($stokSementara[$barang->id] ?? 0) + $request->jumlah_beli;
         session(['stok_sementara' => $stokSementara]);
 
+        // Simpan keranjang baru ke session
         session(['keranjang' => $keranjang]);
         return back()->with('success', 'Barang ditambahkan ke keranjang.');
     }
 
+    // Menghapus barang dari keranjang
     public function hapusDariKeranjang($id)
     {
         $keranjang = session('keranjang', []);
         $stokSementara = session('stok_sementara', []);
 
+        // Cari barang di keranjang
         $item = collect($keranjang)->first(fn($item) => $item['barang_id'] == $id);
         if ($item) {
             // Kembalikan stok ke DB
@@ -84,29 +101,34 @@ class KasirController extends Controller
             if ($barang) {
                 $barang->increment('stok', $stokSementara[$id] ?? $item['jumlah_beli']);
             }
-            // Hapus dari stok sementara
+            // Hapus stok sementara dari session
             unset($stokSementara[$id]);
         }
 
+        // Hapus barang dari keranjang
         $keranjang = collect($keranjang)->reject(fn($item) => $item['barang_id'] == $id)->values()->all();
 
+        // Simpan kembali ke session
         session(['keranjang' => $keranjang]);
         session(['stok_sementara' => $stokSementara]);
 
         return back()->with('success', 'Barang dihapus dari keranjang.');
     }
 
-    // Proses transaksi final
+    // Menyelesaikan transaksi
     public function prosesTransaksi(Request $request)
     {
         $keranjang = session('keranjang', []);
 
+        // Cek kalau keranjang kosong
         if (empty($keranjang)) {
             return back()->with('error', 'Keranjang kosong.');
         }
 
+        // Hitung total harga semua barang di keranjang
         $total = collect($keranjang)->sum('total_item');
 
+        // Validasi pembayaran
         $request->validate([
             'pembeli' => 'nullable|string|max:100',
             'jumlah_bayar' => 'required|numeric|min:' . $total,
@@ -114,7 +136,7 @@ class KasirController extends Controller
 
         DB::beginTransaction();
         try {
-            // Simpan transaksi kasir
+            // Simpan transaksi ke tabel kasir
             $kasir = Kasir::create([
                 'tgl_transaksi' => now(),
                 'pembeli' => $request->pembeli,
@@ -125,6 +147,7 @@ class KasirController extends Controller
                 'catatan' => $request->catatan,
             ]);
 
+            // Simpan detail barang yang dibeli ke tabel detail kasir
             foreach ($keranjang as $item) {
                 DetailKasir::create([
                     'kasir_id' => $kasir->id,
@@ -135,7 +158,7 @@ class KasirController extends Controller
                 ]);
             }
 
-            // Simpan ke tabel Penjualan
+            // Simpan ringkasan transaksi ke tabel penjualan
             $penjualan = Penjualan::create([
                 'users_id' => null,
                 'tgl_transaksi' => now()->toDateString(),
@@ -145,9 +168,9 @@ class KasirController extends Controller
                 'source' => 'offline',
             ]);
 
+            // Simpan detail barang yang dibeli ke tabel penjualan_detail
             foreach ($keranjang as $item) {
                 $barang = Barang::find($item['barang_id']);
-
                 PenjualanDetail::create([
                     'penjualan_id' => $penjualan->id,
                     'barang_id' => $item['barang_id'],
@@ -161,7 +184,7 @@ class KasirController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            // Kalau error, kembalikan stok dari session
+            // Kalau gagal, balikin stok barang
             $stokSementara = session('stok_sementara', []);
             foreach ($keranjang as $item) {
                 $barang = Barang::find($item['barang_id']);
@@ -173,9 +196,10 @@ class KasirController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat menyimpan transaksi.');
         }
 
-        // Bersihkan keranjang dan stok sementara
+        // Bersihkan session keranjang dan stok sementara
         session()->forget(['keranjang', 'stok_sementara']);
 
+        // Simpan data transaksi terakhir untuk keperluan nota
         session()->flash('last_invoice', $kasir->invoice_kode);
         session()->flash('last_total', $total);
         session(['last_keranjang' => $keranjang]);
@@ -184,13 +208,14 @@ class KasirController extends Controller
             ->with('success', 'Transaksi berhasil disimpan.');
     }
 
-
+    // Mengosongkan keranjang
     public function resetKeranjang()
     {
         session()->forget('keranjang');
         return back()->with('success', 'Keranjang dikosongkan.');
     }
 
+    // Menampilkan halaman nota
     public function nota($invoice)
     {
         $kasir = Kasir::with(['details.barang'])->where('invoice_kode', $invoice)->firstOrFail();
@@ -201,6 +226,7 @@ class KasirController extends Controller
         ]);
     }
 
+    // Generate nota dalam bentuk PDF
     public function notaPdf($invoice)
     {
         $kasir = Kasir::with(['details.barang'])->where('invoice_kode', $invoice)->firstOrFail();

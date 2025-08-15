@@ -43,13 +43,14 @@
 <body>
     <div class="text-center bold">
         Toko Bangunan NOTO 19<br>
-        Bancak, Payaman, Mejobo, Kudus
+        Bancak, Payaman, Mejobo, Kudus<br>
+        tbnoto19.rplrus.com
     </div>
 
     <div class="line"></div>
 
     No.Nota: {{ $kasir->invoice_kode }}<br>
-    Tanggal: {{ $kasir->tgl_transaksi }}<br>
+    Tanggal: {{ \Carbon\Carbon::parse($kasir->tgl_transaksi)->timezone('Asia/Jakarta')->translatedFormat('d F Y - H:i:s') }}<br>
     Pembeli: {{ $kasir->pembeli ?? '-' }}
 
     <div class="line"></div>

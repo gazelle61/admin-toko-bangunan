@@ -34,11 +34,6 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'index']);
-    Route::put('/profile', [ProfileController::class, 'updateProfile']);
-});
-
 // FAQ
 Route::post('/faq', [FaqController::class, 'store']);
 
