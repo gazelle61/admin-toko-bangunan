@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 
 @section('title', 'Tambah Data')
 
@@ -140,4 +140,4 @@
             index++;
         });
     </script>
-@endsection
+@endsection --}}

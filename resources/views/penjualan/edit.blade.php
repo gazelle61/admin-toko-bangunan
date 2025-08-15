@@ -38,11 +38,11 @@
                         @enderror
                     </div>
 
-                    <hr>
+                    {{-- <hr>
                     <h5 class="fw-bold">Detail Barang</h5>
                     <div id="detail-wrapper">
                         @foreach ($penjualan->detail as $i => $d)
-                            <div class="border rounded p-3 mb-3 detail-item">
+                            {{-- <div class="border rounded p-3 mb-3 detail-item">
                                 <div class="form-group mb-2">
                                     <label class="fw-semibold">Barang</label>
                                     <select name="detail[{{ $i }}][barang_id]" class="form-control rounded-3"
@@ -54,9 +54,9 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                </div>
+                                </div> --}}
 
-                                <div class="form-group mb-2">
+                    {{-- <div class="form-group mb-2">
                                     <label class="fw-semibold">Kategori</label>
                                     <select name="detail[{{ $i }}][kategori_id]" class="form-control rounded-3"
                                         required>
@@ -67,9 +67,9 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                </div>
+                                </div> --}}
 
-                                <div class="row">
+                    {{-- <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <label class="fw-semibold">Jumlah</label>
                                         <input type="number" name="detail[{{ $i }}][jumlah]"
@@ -81,12 +81,12 @@
                                             class="form-control rounded-3" value="{{ $d->harga_satuan }}" required>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            </div> --}}
+                    {{-- @endforeach
                     </div>
 
                     <button type="button" class="btn btn-sm btn-outline-primary mb-4" id="tambah-detail"><i
-                            class="fas fa-plus-circle"></i> Tambah Barang</button>
+                            class="fas fa-plus-circle"></i> Tambah Barang</button> --}}
 
                     <div class="form-group mb-3">
                         <label class="fw-semibold">Total Pemasukan</label>
@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <script>
+    {{-- <script>
         let index = {{ count($penjualan->detail) }};
         const barangOptions = `{!! $barang->map(fn($b) => "<option value='$b->id'>$b->nama_barang</option>")->implode('') !!}`;
         const kategoriOptions = `{!! $kategori->map(fn($k) => "<option value='$k->id'>$k->nama_kategori</option>")->implode('') !!}`;
@@ -147,5 +147,5 @@
             document.getElementById('detail-wrapper').insertAdjacentHTML('beforeend', html);
             index++;
         });
-    </script>
+    </script> --}}
 @endsection

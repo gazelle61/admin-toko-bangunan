@@ -42,26 +42,12 @@ class CartController extends Controller
         $qty = $request->quantity;
         $subtotal = $harga * $qty;
 
-        if ($qty > $barang->stok) {
-            return response()->json([
-                'message' => 'Stok barang tidak mencukupi. Stok tersedia: ' . $barang->stok
-            ], 400);
-        }
-
-        $subtotal = $harga * $qty;
-
         $cartItem = CartItem::where('users_id', Auth::id())
             ->where('barang_id', $barang->id)
             ->where('status_cart', 'active')
             ->first();
 
         if ($cartItem) {
-            if (($cartItem->quantity + $qty) > $barang->stok) {
-                return response()->json([
-                    'message' => 'Stok barang tidak mencukupi untuk menambah jumlah ini. Stok tersedia: ' . $barang->stok
-                ], 400);
-            }
-
             $cartItem->quantity += $qty;
             $cartItem->total_harga = $cartItem->quantity * $cartItem->harga_satuan;
             $cartItem->save();
@@ -87,14 +73,7 @@ class CartController extends Controller
         $item = CartItem::where('id', $id)
             ->where('users_id', Auth::id())
             ->where('status_cart', 'active')
-            ->with('barang')
             ->firstOrFail();
-
-        if ($request->quantity > $item->barang->stok) {
-            return response()->json([
-                'message' => 'Stok barang tidak mencukupi. Stok tersedia:' . $item->barang->stok
-            ], 400);
-        }
 
         $item->quantity = $request->quantity;
         $item->total_harga = $item->harga_satuan * $item->quantity;
@@ -140,13 +119,6 @@ class CartController extends Controller
 
         if ($cartitems->isEmpty()) {
             return response()->json(['message' => 'Keranjang kosong.'], 400);
-        }
-        foreach ($cartitems as $item) {
-            if ($item->quantity > $item->barang->stok) {
-                return response()->json([
-                    'message' => "Stok barang {$item->barang->nama_barang} tidak mencukupi. Stok tersedia: {$item->barang->stok}"
-                ], 400);
-            }
         }
 
         DB::beginTransaction();
@@ -214,8 +186,8 @@ class CartController extends Controller
                     'nama_penerima' => $transaction->nama_penerima,
                     'metode_pembayaran' => $transaction->metode_pembayaran,
                     'bukti_transaksi' => $transaction->bukti_transaksi
-                        ? asset('storage/' . $transaction->bukti_transaksi)
-                        : null,
+                        ?asset('storage/' . $transaction->bukti_transaksi)
+                        :null,
                     'status' => [
                         'kode' => $transaction->status_transactions,
                         'label' => $this->statusLabel($transaction->status_transactions)

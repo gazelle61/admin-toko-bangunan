@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         setlocale(LC_TIME, 'id_ID.UTF-8');
         Carbon::setLocale('id');
-        
+
         $range = $request->get('range', 'minggu');
         $now = Carbon::today();
 

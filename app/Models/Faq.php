@@ -16,6 +16,5 @@ class Faq extends Model
         'email',
         'pertanyaan',
         'jawaban',
-        'is_public',
     ];
 }

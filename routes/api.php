@@ -51,6 +51,7 @@ Route::delete('/bantuan/{id}', [BantuanController::class, 'destroy']);
 
 //Produk Unggulan
 Route::get('/produk-unggulan', [TopController::class, 'topProducts']);
+
 // Data
 Route::apiResource('kategori', KategoriController::class);
 

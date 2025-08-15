@@ -39,9 +39,10 @@
                 <p class="mb-1">Catatan: {{ $kasir->catatan ?? '-' }}</p>
             </div>
 
-            <div class="d-flex gap-5 justify-content-end mt-4">
-                <a href="{{ route('kasir.index') }}" class="btn btn-secondary rounded-3 px-4 py-2"> <i
-                        class="bi bi-arrow-left-circle me-1"></i> Kembali ke Kasir</a><br>
+            <div class="d-flex gap-3 justify-content-end mt-4">
+                <a href="{{ route('kasir.index') }}" class="btn btn-secondary rounded-3 px-4 py-2">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Kembali ke Kasir</a>
+                <hr>
                 <a href="{{ route('kasir.notaPdf', $kasir->invoice_kode) }}" class="btn btn-primary rounded-3 px-4 py-2"
                     target="_blank">
                     <i class="bi bi-printer-fill me-1"></i> Cetak Struk

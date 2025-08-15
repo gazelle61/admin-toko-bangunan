@@ -24,9 +24,22 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label class="fw-semibold">Nama Supplier</label>
-                        <input type="text" name="nama_supplier"
-                            class="form-control rounded-3 @error('nama_supplier') is-invalid @enderror"
+                        <label class="fw-semibold">Pilih Supplier yang Sudah Ada</label>
+                        <select name="supplier_existing" id="supplier_existing" class="form-control rounded-3">
+                            <option value="">-- Pilih Supplier --</option>
+                            @foreach ($suppliers as $s)
+                                <option value="{{ $s->id }}">{{ $s->nama_supplier }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="text-center my-2">
+                        <span class="text-muted">Atau masukkan supplier baru</span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="fw-semibold">Nama Supplier Baru</label>
+                        <input type="text" name="nama_supplier" class="form-control rounded-3"
                             value="{{ old('nama_supplier') }}">
                         @error('nama_supplier')
                             <span class="text-danger">{{ $message }}</span>
@@ -62,7 +75,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('kategori.index') }}"
+                        <a href="{{ route('supplier.index') }}"
                             class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
                         <hr>
                         <button type="submit" class="btn btn-dark rounded-pill px-4">Simpan</button>
@@ -71,4 +84,17 @@
             </div>
         </div>
     </div>
+    <!-- Tambah CDN Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#supplier_existing').select2({
+                placeholder: "-- Pilih Supplier --",
+                allowClear: true
+            });
+        });
+    </script>
+
 @endsection

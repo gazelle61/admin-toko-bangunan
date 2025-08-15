@@ -15,9 +15,9 @@ class CartItem extends Model
         'users_id',
         'barang_id',
         'quantity',
-        'harga_satuan',
-        'total_harga',
-        'status_cart',
+        'harga_satuan', //decimal 15,2
+        'total_harga', //decimal 15,2
+        'status_cart', //enum (active, checked_out, abandoned) null
     ];
 
     public function users()

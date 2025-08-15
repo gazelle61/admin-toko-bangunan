@@ -38,7 +38,6 @@ class penjualanController extends Controller
             'tgl_transaksi' => 'required|date',
             'total_pemasukan' => 'required|numeric',
             'kontak_pelanggan' => 'nullable|string|max:20',
-            'bukti_transaksi' => 'nullable|image',
             'detail' => 'required|array|min:1',
             'detail.*.barang_id' => 'required|exists:barang,id',
             'detail.*.kategori_id' => 'required|exists:kategori,id',
@@ -46,17 +45,14 @@ class penjualanController extends Controller
             'detail.*.harga_satuan' => 'required|numeric|min:0',
         ]);
 
-        $buktiPath = null;
-        if ($request->hasFile('bukti_transaksi')) {
-            $buktiPath = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
-        }
+        $invoice_kode = 'TBNT' . now()->format('YmdHis');
 
         $penjualan = Penjualan::create([
             'users_id' => null,
             'tgl_transaksi' => $validated['tgl_transaksi'],
             'total_pemasukan' => $validated['total_pemasukan'],
             'kontak_pelanggan' => $validated['kontak_pelanggan'] ?? null,
-            'bukti_transaksi' => $buktiPath,
+            'bukti_transaksi' => $invoice_kode,
             'source' => 'offline',
         ]);
 
@@ -75,11 +71,13 @@ class penjualanController extends Controller
 
     public function storeOnline($transactionId)
     {
-        $trx = Transaction::with('items')->findOrFail($transactionId);
+        $trx = Transaction::with('items.barang')->findOrFail($transactionId);
 
-        $alreadySynced = Penjualan::where('source', 'online')->where('tgl_transaksi', $trx->created_at->toDateString())
+        $alreadySynced = Penjualan::where('source', 'online')
+            ->where('tgl_transaksi', $trx->created_at->toDateString())
             ->where('total_pemasukan', $trx->total_harga)
             ->where('kontak_pelanggan', $trx->no_telepon)
+            ->where('nama_penerima', $trx->nama_penerima)
             ->exists();
 
         if ($alreadySynced) {
@@ -91,17 +89,18 @@ class penjualanController extends Controller
             'tgl_transaksi' => $trx->created_at,
             'total_pemasukan' => $trx->total_harga,
             'kontak_pelanggan' => $trx->no_telepon,
+            'nama_penerima' => $trx->nama_penerima,
             'bukti_transaksi' => $trx->bukti_transaksi ?? null,
             'source' => 'online',
         ]);
 
-        foreach ($trx['detail'] as $item) {
+        foreach ($trx->items as $item) {
             PenjualanDetail::create([
                 'penjualan_id' => $penjualan->id,
-                'barang_id' => $item['barang_id'],
-                'kategori_id' => $item['kategori_id'],
-                'jumlah' => $item['jumlah'],
-                'harga_satuan' => $item['harga_satuan'],
+                'barang_id' => $item->barang_id,
+                'kategori_id' => $item->barang->kategori_id ?? null,
+                'jumlah' => $item->quantity,
+                'harga_satuan' => $item->harga_satuan,
             ]);
         }
 
@@ -166,7 +165,7 @@ class penjualanController extends Controller
 
     public function show($id)
     {
-        $penjualan = Penjualan::findOrFail($id);
+        $penjualan = Penjualan::with('detail.barang', 'detail.kategori')->findOrFail($id);
         return view('penjualan.show', compact('penjualan'));
     }
 

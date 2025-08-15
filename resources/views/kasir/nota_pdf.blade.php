@@ -48,6 +48,7 @@
 
     <div class="line"></div>
 
+    No.Nota: {{ $kasir->invoice_kode }}<br>
     Tanggal: {{ $kasir->tgl_transaksi }}<br>
     Pembeli: {{ $kasir->pembeli ?? '-' }}
 

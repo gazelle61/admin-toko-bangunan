@@ -12,17 +12,37 @@ class Barang extends Model
     protected $table = 'barang';
 
     protected $fillable = [
-        'foto_barang',
+        'foto_barang', //string, null
         'nama_barang',
         'ukuran',
         'kategori_id',
-        'harga',
+        'harga', //decimal 15,2
         'stok',
-        'deskripsi'
+        'deskripsi' //notnull
     ];
 
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
+    }
+
+    public function cart_items()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function transactions_items()
+    {
+        return $this->hasMany(TransactionItem::class);
+    }
+
+    public function detail_kasir()
+    {
+        return $this->hasMany(DetailKasir::class);
+    }
+
+    public function penjualan_detail()
+    {
+        return $this->hasMany(PenjualanDetail::class);
     }
 }

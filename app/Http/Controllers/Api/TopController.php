@@ -13,17 +13,17 @@ class TopController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek   = Carbon::now()->endOfWeek();
 
-        $topProducts = DB::table('penjualan_details')
-            ->join('barangs', 'penjualan_details.barang_id', '=', 'barangs.id')
-            ->join('penjualans', 'penjualan_details.penjualan_id', '=', 'penjualans.id')
-            ->whereBetween('penjualans.tgl_transaksi', [$startOfWeek, $endOfWeek])
+        $topProducts = DB::table('penjualan_detail')
+            ->join('barang', 'penjualan_detail.barang_id', '=', 'barang.id')
+            ->join('penjualan', 'penjualan_detail.penjualan_id', '=', 'penjualan.id')
+            ->whereBetween('penjualan.tgl_transaksi', [$startOfWeek, $endOfWeek])
             ->select(
-                'barangs.id',
-                'barangs.nama_barang',
-                DB::raw('SUM(penjualan_details.qty) as total_qty')
+                'barang.id',
+                'barang.nama_barang',
+                DB::raw('SUM(penjualan_detail.jumlah) as jumlah')
             )
-            ->groupBy('barangs.id', 'barangs.nama_barang')
-            ->orderByDesc('total_qty')
+            ->groupBy('barang.id', 'barang.nama_barang')
+            ->orderByDesc('jumlah')
             ->limit(6)
             ->get();
 

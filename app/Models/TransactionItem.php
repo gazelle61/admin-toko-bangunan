@@ -15,8 +15,8 @@ class TransactionItem extends Model
         'transaction_id',
         'barang_id',
         'quantity',
-        'harga_satuan',
-        'total_harga',
+        'harga_satuan', //decimal 15,2
+        'total_harga', //decimal 15,2
     ];
 
     public function transaction()
