@@ -11,9 +11,10 @@ class Penjualan extends Model
 
     protected $table = 'penjualan';
 
-    protected $with = ['detail.barang', 'detail.kategori'];
+    protected $with = ['details.barang', 'details.kategori'];
 
     protected $fillable = [
+        'transactions_id', //null
         'users_id', //null
         'tgl_transaksi',
         'total_pemasukan',
@@ -30,5 +31,10 @@ class Penjualan extends Model
     public function users()
     {
         return $this->belongsTo(Users::class);
+    }
+
+    public function transactions()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 }

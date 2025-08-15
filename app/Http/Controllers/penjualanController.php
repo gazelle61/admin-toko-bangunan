@@ -7,33 +7,42 @@ use App\Models\Kategori;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
 use App\Models\Transaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class penjualanController extends Controller
 {
+    // Menampilkan daftar penjualan
     public function index(Request $request)
     {
-        $query = Penjualan::with('detail.barang', 'detail.kategori');
+        // Ambil data penjualan beserta relasi detail barang dan kategori
+        $query = Penjualan::with('details.barang', 'details.kategori');
 
+        // Jika ada keyword pencarian berdasarkan "source"
         if ($request->has('search') && $request->search != '') {
             $query->where('source', 'like', '%' . $request->search . '%');
         }
 
+        // Urutkan terbaru dan paginasi 10 data per halaman
         $penjualans = $query->latest()->paginate(10);
 
         return view('penjualan.index', compact('penjualans'));
     }
 
+    // Form tambah penjualan
     public function create()
     {
+        // Ambil semua data barang dan kategori
         $barang = Barang::all();
         $kategori = Kategori::all();
         return view('penjualan.create', compact('barang', 'kategori'));
     }
 
+    // Simpan penjualan offline (kasir/manual)
     public function store(Request $request)
     {
+        // Validasi input
         $validated = $request->validate([
             'tgl_transaksi' => 'required|date',
             'total_pemasukan' => 'required|numeric',
@@ -45,17 +54,20 @@ class penjualanController extends Controller
             'detail.*.harga_satuan' => 'required|numeric|min:0',
         ]);
 
+        // Generate kode invoice unik (TBNT + timestamp)
         $invoice_kode = 'TBNT' . now()->format('YmdHis');
 
+        // Simpan data penjualan
         $penjualan = Penjualan::create([
-            'users_id' => null,
+            'users_id' => null, // Belum ada user terkait
             'tgl_transaksi' => $validated['tgl_transaksi'],
             'total_pemasukan' => $validated['total_pemasukan'],
             'kontak_pelanggan' => $validated['kontak_pelanggan'] ?? null,
-            'bukti_transaksi' => $invoice_kode,
+            'bukti_transaksi' => $invoice_kode, // Simpan kode invoice sebagai bukti
             'source' => 'offline',
         ]);
 
+        // Simpan detail penjualan
         foreach ($validated['detail'] as $item) {
             PenjualanDetail::create([
                 'penjualan_id' => $penjualan->id,
@@ -69,44 +81,7 @@ class penjualanController extends Controller
         return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil disimpan!');
     }
 
-    public function storeOnline($transactionId)
-    {
-        $trx = Transaction::with('items.barang')->findOrFail($transactionId);
-
-        $alreadySynced = Penjualan::where('source', 'online')
-            ->where('tgl_transaksi', $trx->created_at->toDateString())
-            ->where('total_pemasukan', $trx->total_harga)
-            ->where('kontak_pelanggan', $trx->no_telepon)
-            ->where('nama_penerima', $trx->nama_penerima)
-            ->exists();
-
-        if ($alreadySynced) {
-            return back()->with('warning', 'Transaksi sudah pernah disimpan.');
-        }
-
-        $penjualan = Penjualan::create([
-            'users_id' => $trx['users_id'] ?? null,
-            'tgl_transaksi' => $trx->created_at,
-            'total_pemasukan' => $trx->total_harga,
-            'kontak_pelanggan' => $trx->no_telepon,
-            'nama_penerima' => $trx->nama_penerima,
-            'bukti_transaksi' => $trx->bukti_transaksi ?? null,
-            'source' => 'online',
-        ]);
-
-        foreach ($trx->items as $item) {
-            PenjualanDetail::create([
-                'penjualan_id' => $penjualan->id,
-                'barang_id' => $item->barang_id,
-                'kategori_id' => $item->barang->kategori_id ?? null,
-                'jumlah' => $item->quantity,
-                'harga_satuan' => $item->harga_satuan,
-            ]);
-        }
-
-        return back()->with('success', 'Transaksi berhasil disimpan!');
-    }
-
+    // Form edit penjualan
     public function edit($id)
     {
         $penjualan = Penjualan::with('detail')->findOrFail($id);
@@ -116,8 +91,10 @@ class penjualanController extends Controller
         return view('penjualan.edit', compact('penjualan', 'barang', 'kategori'));
     }
 
+    // Update data penjualan
     public function update(Request $request, $id)
     {
+        // Validasi input
         $validated = $request->validate([
             'tgl_transaksi' => 'required|date',
             'total_pemasukan' => 'required|numeric',
@@ -132,14 +109,17 @@ class penjualanController extends Controller
 
         $penjualan = Penjualan::findOrFail($id);
 
+        // Jika ada file bukti transaksi baru, hapus yang lama
         if ($request->hasFile('bukti_transaksi')) {
             if ($penjualan->bukti_transaksi) {
                 Storage::disk('public')->delete($penjualan->bukti_transaksi);
             }
 
+            // Upload file baru
             $penjualan->bukti_transaksi = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
         }
 
+        // Update data penjualan
         $penjualan->update([
             'users_id' => null,
             'tgl_transaksi' => $validated['tgl_transaksi'],
@@ -148,7 +128,8 @@ class penjualanController extends Controller
             'bukti_transaksi' => $penjualan->bukti_transaksi,
         ]);
 
-        $penjualan->detail()->delete();
+        // Hapus semua detail lama, lalu simpan ulang
+        $penjualan->details()->delete();
 
         foreach ($validated['detail'] as $item) {
             PenjualanDetail::create([
@@ -163,16 +144,20 @@ class penjualanController extends Controller
         return redirect()->route('penjualan.index')->with('success', 'Data berhasil diupdate!');
     }
 
+    // Lihat detail penjualan + link PDF
     public function show($id)
     {
-        $penjualan = Penjualan::with('detail.barang', 'detail.kategori')->findOrFail($id);
-        return view('penjualan.show', compact('penjualan'));
+        $penjualan = Penjualan::with('details.barang', 'details.kategori')->findOrFail($id);
+        $pdfUrl = route('penjualan.pdf', $penjualan->id);
+        return view('penjualan.show', compact('penjualan', 'pdfUrl'));
     }
 
+    // Hapus penjualan
     public function destroy($id)
     {
         $penjualan = Penjualan::findOrFail($id);
 
+        // Hapus bukti transaksi jika ada
         if ($penjualan->bukti_transaksi) {
             Storage::disk('public')->delete($penjualan->bukti_transaksi);
         }
@@ -180,5 +165,15 @@ class penjualanController extends Controller
         $penjualan->delete();
 
         return redirect()->route('penjualan.index')->with('success', 'Data berhasil dihapus!');
+    }
+
+    public function cetakPDF($id)
+    {
+        $penjualan = Penjualan::with('details.barang', 'details.kategori')->findOrFail($id);
+
+        $pdf = Pdf::loadView('penjualan.pdf', compact('penjualan'))
+            ->setPaper('A6', 'potrait');
+
+        return $pdf->stream('Struk-'.$penjualan->bukti_transaksi.'.pdf');
     }
 }

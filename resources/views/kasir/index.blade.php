@@ -33,7 +33,7 @@
                                 <div class="col-md-5">
                                     <label>Barang</label>
                                     <select id="barang_id" name="barang_id" class="form-control select2">
-                                        @foreach ($barangList as $barang)
+                                        @foreach ($barangs as $barang)
                                             <option value="{{ $barang->id }}" data-stok="{{ $barang->stok }}"
                                                 {{ $barang->stok == 0 ? 'disabled' : '' }}>
                                                 {{ $barang->nama_barang }} (Stok: {{ $barang->stok }})
@@ -63,9 +63,9 @@
                                         <th>#</th>
                                         <th>ID Barang</th>
                                         <th>Barang</th>
-                                        <th>Harga</th>
+                                        <th>Harga /pcs</th>
                                         <th>Jumlah</th>
-                                        <th>Total</th>
+                                        <th>Total Item</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -151,7 +151,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Konfirmasi hapus barang
+            // Konfirmasi hapus item
             document.querySelectorAll('.form-hapus-keranjang').forEach(function(form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
@@ -190,7 +190,7 @@
                 }
             });
 
-            // Format input bayar
+            // Format input bayar jadi Rp
             const bayarInput = new AutoNumeric('#jumlah_bayar_display', {
                 currencySymbol: 'Rp ',
                 decimalCharacter: ',',
