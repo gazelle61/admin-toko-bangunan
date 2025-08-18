@@ -25,9 +25,20 @@
 
                     <div class="form-group mb-3">
                         <label class="fw-semibold">Nama Supplier</label>
-                        <input type="text" name="nama_supplier"
-                            class="form-control rounded-3 @error('nama_supplier') is-invalid @enderror"
-                            value="{{ old('nama_supplier', $supplier->nama_supplier) }}">
+                        <select name="nama_supplier" id="nama_supplier"
+                            class="form-control rounded-3 @error('nama_supplier') is-invalid @enderror">
+                            {{-- Tampilkan data lama yang sedang diedit --}}
+                            <option value="{{ $supplier->nama_supplier }}" selected>
+                                {{ $supplier->nama_supplier }} (Saat ini)
+                            </option>
+
+                            {{-- Loop semua supplier unik --}}
+                            @foreach ($allSuppliers as $s)
+                                @if ($s->nama_supplier != $supplier->nama_supplier)
+                                    <option value="{{ $s->nama_supplier }}">{{ $s->nama_supplier }}</option>
+                                @endif
+                            @endforeach
+                        </select>
                         @error('nama_supplier')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -72,3 +83,15 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#nama_supplier').select2({
+                tags: true, // bisa input baru
+                placeholder: "Pilih atau ketik nama supplier",
+                allowClear: true
+            });
+        });
+    </script>
+@endpush

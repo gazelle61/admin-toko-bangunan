@@ -41,7 +41,7 @@ class CartController extends Controller
         $harga = $barang->harga;
         $qty = $request->quantity;
         $subtotal = $harga * $qty;
-
+        // ga ada validasi stok
         $cartItem = CartItem::where('users_id', Auth::id())
             ->where('barang_id', $barang->id)
             ->where('status_cart', 'active')
@@ -74,7 +74,7 @@ class CartController extends Controller
             ->where('users_id', Auth::id())
             ->where('status_cart', 'active')
             ->firstOrFail();
-
+        // ga ada validasi stok
         $item->quantity = $request->quantity;
         $item->total_harga = $item->harga_satuan * $item->quantity;
         $item->save();
@@ -131,7 +131,7 @@ class CartController extends Controller
             if ($cartitems->isEmpty()) {
                 return response()->json(['message' => 'Keranjang kosong.'], 400);
             }
-
+            // ga ada validasi stok
             // Buat transaksi
             $transaksi = Transaction::create([
                 'users_id' => $userId,
@@ -147,7 +147,7 @@ class CartController extends Controller
 
             foreach ($cartitems as $item) {
                 TransactionItem::create([
-                    'transaction_id' => $transaksi->id,
+                    'transactions_id' => $transaksi->id,
                     'barang_id' => $item->barang_id,
                     'quantity' => $item->quantity,
                     'harga_satuan' => $item->harga_satuan,
@@ -160,7 +160,7 @@ class CartController extends Controller
             }
 
             // Sinkronisasi ke Penjualan
-            $this->syncToPenjualan($transaksi);
+            $this->salinKePenjualan($transaksi);
 
             DB::commit();
         } catch (\Exception $e) {

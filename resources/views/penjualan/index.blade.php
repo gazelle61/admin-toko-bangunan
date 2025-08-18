@@ -36,7 +36,7 @@
                                 {{ $loop->iteration + ($penjualans->currentPage() - 1) * $penjualans->perPage() }}</td>
                             <td>{{ \Carbon\Carbon::parse($penjualan->tgl_transaksi)->translatedFormat('d F Y') }}</td>
                             <td>Rp{{ number_format($penjualan->total_pemasukan, 0, ',', '.') }}</td>
-                            <td>{{ $penjualan->nama ?? '-' }}</td>
+                            <td>{{ $penjualan->kontak_pelanggan ?? '-' }}</td>
                             <td>{{ ucfirst($penjualan->source) }}</td>
                             <td class="text-center">
                                 <a href="{{ route('penjualan.show', $penjualan->id) }}"

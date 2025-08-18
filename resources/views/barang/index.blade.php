@@ -16,15 +16,16 @@
             </form>
         </div>
 
-        <div class="table-reponsive">
-            <table class="table table-bordered text-center align-midle">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>
                         <th>Nama Barang</th>
-                        <th>Kategori Barang</th>
-                        <th>Ukuran</th>
-                        <th>Harga</th>
+                        {{-- <th>Kategori Barang</th> --}}
+                        {{-- <th>Ukuran</th> --}}
+                        <th>Harga/berat</th>
+                        {{-- <th>Satuan Berat</th> --}}
                         <th>Stok</th>
                         <th>Aksi</th>
                     </tr>
@@ -32,11 +33,13 @@
                 <tbody>
                     @forelse ($barangs as $barang)
                         <tr>
-                            <td class="text-center">{{ $loop->iteration }}</td>
+                            <td class="text-center">
+                                {{ $loop->iteration + ($barangs->currentPage() - 1) * $barangs->perPage() }}</td>
                             <td>{{ $barang->nama_barang }}</td>
-                            <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
-                            <td>{{ $barang->ukuran }}</td>
+                            {{-- <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
+                            <td>{{ $barang->ukuran }}</td> --}}
                             <td>Rp{{ number_format($barang->harga, 0, ',', '.') }}</td>
+                            {{-- <td>{{ $barang->satuan_harga }}</td> --}}
                             <td>{{ $barang->stok }}</td>
                             <td class="text-center">
                                 <a href="{{ route('barang.show', $barang->id) }}" class="btn btn-info btn-sm">Detail</a>

@@ -13,7 +13,7 @@ class Kategori extends Model
 
     protected $fillable = [
         'nama_kategori',
-        'foto_kategori'
+        'foto_kategori' //null
     ];
 
     public function penjualan_detail()

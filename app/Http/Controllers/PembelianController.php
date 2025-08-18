@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pembelian;
-use App\Models\Supplier;
-use App\Models\Kategori;
 use Illuminate\Http\Request;
+use App\Models\Pembelian;
+use App\Models\Kategori;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Storage;
 
 class PembelianController extends Controller
@@ -15,7 +15,7 @@ class PembelianController extends Controller
         $query = Pembelian::with('supplier', 'kategori');
 
         if ($request->has('search') && $request->search != '') {
-            $query->where('nama_barang', 'like', '%' . $request->search . '%');
+            $query->where('tgl_transaksi', 'like', '%' . $request->search . '%');
         }
 
         $pembelians = $query->latest()->paginate(10);
@@ -35,18 +35,29 @@ class PembelianController extends Controller
         $validated = $request->validate([
             'supplier_id' => 'required|exists:supplier,id',
             'tgl_transaksi' => 'required|date',
-            'kategori_id' => 'required|exists:kategori,id',
-            'nama_barang' => 'required|string|max:255',
-            'jumlah_pembelian' => 'required|integer',
             'harga' => 'required|numeric',
-            'bukti_transaksi' => 'nullable|image',
+            'nota_pembelian' => 'nullable|image',
+            'detail' => 'required|array',
+            'detail.*.kategori_id' => 'required|exists:kategori,id',
+            'detail.*.nama_barang' => 'required|string',
+            'detail.*.jumlah' => 'required|integer|min:1',
+            'detail.*.harga_satuan' => 'required|numeric|min:0',
         ]);
 
-        if ($request->hasFile('bukti_transaksi')) {
-            $validated['bukti_transaksi'] = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
+        if ($request->hasFile('nota_pembelian')) {
+            $validated['nota_pembelian'] = $request->file('nota_pembelian')->store('nota_pembelian', 'public');
         }
 
-        Pembelian::create($validated);
+        $pembelian = Pembelian::create($validated);
+
+        foreach ($request->detail as $d) {
+            $pembelian->details()->create([
+                'kategori_id' => $d['kategori_id'],
+                'nama_barang' => $d['nama_barang'],
+                'jumlah' => $d['jumlah'],
+                'harga_satuan' => $d['harga_satuan'],
+            ]);
+        }
 
         return redirect()->route('pembelian.index')->with('success', 'Data berhasil ditambahkan!');
     }
@@ -67,18 +78,20 @@ class PembelianController extends Controller
         $validated = $request->validate([
             'supplier_id' => 'required|exists:supplier,id',
             'tgl_transaksi' => 'required|date',
-            'kategori_id' => 'required|exists:kategori,id',
-            'nama_barang' => 'required|string|max:255',
-            'jumlah_pembelian' => 'required|integer',
             'harga' => 'required|numeric',
-            'bukti_transaksi' => 'nullable|image',
+            'nota_pembelian' => 'nullable|image',
+            'detail' => 'required|array',
+            'detail.*.kategori_id' => 'required|exists:kategori,id',
+            'detail.*.nama_barang' => 'required|string',
+            'detail.*.jumlah' => 'required|integer|min:1',
+            'detail.*.harga_satuan' => 'required|numeric|min:0',
         ]);
 
-        if ($request->hasFile('bukti_transaksi')) {
-            if ($pembelian->bukti_transaksi) {
-                Storage::disk('public')->delete($pembelian->bukti_transaksi);
+        if ($request->hasFile('nota_pembelian')) {
+            if ($pembelian->nota_pembelian) {
+                Storage::disk('public')->delete($pembelian->nota_pembelian);
             }
-            $validated['bukti_transaksi'] = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
+            $validated['nota_pembelian'] = $request->file('nota_pembelian')->store('nota_pembelian', 'public');
         }
 
         $pembelian->update($validated);
@@ -96,8 +109,8 @@ class PembelianController extends Controller
     {
         $pembelian = Pembelian::findOrFail($id);
 
-        if ($pembelian->bukti_transaksi) {
-            Storage::disk('public')->delete($pembelian->bukti_transaksi);
+        if ($pembelian->nota_pembelian) {
+            Storage::disk('public')->delete($pembelian->nota_pembelian);
         }
 
         $pembelian->delete();

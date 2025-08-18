@@ -55,7 +55,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="fw-semibold">Harga</label>
+                            <label class="fw-semibold">Harga/berat</label>
                             <input type="number" name="harga"
                                 class="form-control rounded-3 @error('harga') is-invalid @enderror"
                                 value="{{ old('harga') }}">
@@ -63,6 +63,17 @@
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold">Satuan Berat</label>
+                            <input type="text" name="satuan_harga"
+                                class="form-control rounded-3 @error('satuan_harga') is-invalid @enderror"
+                                value="{{ old('satuan_harga') }}">
+                            @error('satuan_harga')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+
                         <div class="col-md-6">
                             <label class="fw-semibold">Stok</label>
                             <input type="number" name="stok"

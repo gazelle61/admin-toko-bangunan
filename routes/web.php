@@ -4,13 +4,11 @@ use App\Http\Controllers\Api\SocialiteController;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BantuanController;
-use App\Http\Controllers\Admin\OnlineController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\penjualanController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\OfflineController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -38,7 +36,7 @@ Route::get('/auth/google/callback', [SocialiteController::class, 'callback']);
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
 
-Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout'); //belum di pake
 
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -64,13 +62,14 @@ Route::prefix('admin')->group(function () {
     Route::get('/penjualan/{id}/pdf', [penjualanController::class, 'cetakPDF'])->name('penjualan.pdf');
 });
 
-Route::prefix('admin')->group(function () {
-    Route::resource('offline', OnlineController::class);
-});
+// Route::prefix('admin')->group(function () {
+//     Route::resource('offline', OnlineController::class);
+// });
 
 // PEMBELIAN
 Route::prefix('admin')->group(function () {
     Route::resource('pembelian', PembelianController::class);
+    Route::get('/supplier/{supplierId}/barang', [PembelianController::class, 'getBarangBySupplier']); //gk di pake
 });
 
 // BARANG
@@ -91,5 +90,5 @@ Route::prefix('admin')->group(function () {
 // Form FAQ
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/faq', [BantuanController::class, 'index'])->name('faq.index');
-    Route::put('/faq/{id}', [BantuanController::class, 'update'])->name('faq.update');
+    Route::put('/faq/{id}', [BantuanController::class, 'update'])->name('faq.update'); //gk di pake
 });

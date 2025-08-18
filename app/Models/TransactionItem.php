@@ -12,7 +12,7 @@ class TransactionItem extends Model
     protected $table = 'transactions_items';
 
     protected $fillable = [
-        'transaction_id',
+        'transactions_id',
         'barang_id',
         'quantity',
         'harga_satuan', //decimal 15,2
@@ -21,7 +21,7 @@ class TransactionItem extends Model
 
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class, 'transaction_id');
+        return $this->belongsTo(Transaction::class, 'transactions_id');
     }
 
     public function barang()

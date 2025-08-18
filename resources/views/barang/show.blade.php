@@ -71,8 +71,12 @@
                             <td>{{ $barang->ukuran }}</td>
                         </tr>
                         <tr>
-                            <th>Harga</th>
+                            <th>Harga/berat</th>
                             <td>Rp{{ number_format($barang->harga, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Satuan Berat</th>
+                            <td>{{ $barang->satuan_harga }}</td>
                         </tr>
                         <tr>
                             <th>Stok</th>

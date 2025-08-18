@@ -14,11 +14,11 @@ class Pembelian extends Model
     protected $fillable = [
         'supplier_id',
         'tgl_transaksi',
-        'kategori_id',
-        'nama_barang', //null
-        'jumlah_pembelian',
+        // 'kategori_id',
+        // 'nama_barang', //null
+        // 'jumlah_pembelian',
         'harga',
-        'bukti_transaksi',
+        'nota_pembelian', //null
     ];
 
     public function supplier()
@@ -29,5 +29,10 @@ class Pembelian extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
+    }
+
+    public function details()
+    {
+        return $this->hasMany(PembelianDetail::class);
     }
 }

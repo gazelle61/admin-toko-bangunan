@@ -23,9 +23,6 @@
                         <th>No.</th>
                         <th>Tanggal Transaksi</th>
                         <th>Nama Supplier</th>
-                        <th>Kategori Barang</th>
-                        <th>Nama Barang</th>
-                        <th>Jumlah Pembelian</th>
                         <th>Total Pengeluaran</th>
                         <th>Aksi</th>
                     </tr>
@@ -37,9 +34,6 @@
                                 {{ $loop->iteration + ($pembelians->currentPage() - 1) * $pembelians->perPage() }}</td>
                             <td>{{ $pembelian->tgl_transaksi }}</td>
                             <td>{{ $pembelian->supplier->nama_supplier ?? '-' }}</td>
-                            <td>{{ $pembelian->kategori->nama_kategori ?? '-' }}</td>
-                            <td>{{ $pembelian->nama_barang ?? '-' }}</td>
-                            <td>{{ $pembelian->jumlah_pembelian }}</td>
                             <td>Rp{{ number_format($pembelian->harga, 0, ',', '.') }}</td>
                             <td class="text-center">
                                 <a href="{{ route('pembelian.show', $pembelian->id) }}"

@@ -10,15 +10,17 @@
                 <form action="{{ route('pembelian.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <div class="form-group mb-4">
-                        <label class="fw-semibold">Bukti Transaksi</label>
-                        <input type="file" name="bukti_transaksi"
-                            class="form-control @error('bukti_transaksi') is-invalid @enderror">
-                        @error('bukti_transaksi')
+                    {{-- Nota Pembelian --}}
+                    <div class="form-group mb-3">
+                        <label class="fw-semibold">Nota Pembelian</label>
+                        <input type="file" name="nota_pembelian"
+                            class="form-control @error('nota_pembelian') is-invalid @enderror">
+                        @error('nota_pembelian')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
+                    {{-- Tanggal Transaksi --}}
                     <div class="form-group mb-3">
                         <label class="fw-semibold">Tanggal Transaksi</label>
                         <input type="date" name="tgl_transaksi"
@@ -29,15 +31,14 @@
                         @enderror
                     </div>
 
-                    {{-- PILIH SUPPLIER --}}
+                    {{-- Supplier --}}
                     <div class="form-group mb-3">
                         <label class="fw-semibold">Pilih Supplier</label>
-                        <select name="supplier_id" id="supplierSelect"
+                        <select name="supplier_id"
                             class="form-control rounded-3 @error('supplier_id') is-invalid @enderror">
                             <option value="">--Pilih Supplier--</option>
                             @foreach ($supplier as $s)
-                                <option value="{{ $s->id }}" data-barang="{{ $s->barang_supplyan }}"
-                                    {{ old('supplier_id') == $s->id ? 'selected' : '' }}>
+                                <option value="{{ $s->id }}" {{ old('supplier_id') == $s->id ? 'selected' : '' }}>
                                     {{ $s->nama_supplier }}
                                 </option>
                             @endforeach
@@ -47,42 +48,47 @@
                         @enderror
                     </div>
 
-                    {{-- PILIH BARANG DARI SUPPLIER --}}
-                    <div class="form-group mb-3">
-                        <label class="fw-semibold">Barang dari Supplier</label>
-                        <select name="nama_barang" id="barangSelect"
-                            class="form-control rounded-3 @error('nama_barang') is-invalid @enderror">
-                            <option value="">--Pilih Barang--</option>
-                        </select>
-                        @error('nama_barang')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    {{-- Detail Barang --}}
+                    <h5 class="fw-bold">Detail Barang</h5>
+                    <div id="detail-wrapper">
+                        <div class="border rounded p-3 mb-3 detail-item">
+                            {{-- Kategori --}}
+                            <div class="form-group mb-2">
+                                <label class="fw-semibold">Kategori</label>
+                                <select name="detail[0][kategori_id]" class="form-control rounded-3" required>
+                                    <option value="">--Pilih Kategori--</option>
+                                    @foreach ($kategori as $k)
+                                        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Nama Barang --}}
+                            <div class="form-group mb-2">
+                                <label class="fw-semibold">Nama Barang</label>
+                                <input type="text" name="detail[0][nama_barang]" class="form-control rounded-3" required>
+                            </div>
+
+                            {{-- Jumlah dan Harga Satuan --}}
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">Jumlah</label>
+                                    <input type="number" name="detail[0][jumlah]" class="form-control rounded-3" required>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">Harga Satuan</label>
+                                    <input type="number" name="detail[0][harga_satuan]" class="form-control rounded-3"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label class="fw-semibold">Jumlah Pembelian</label>
-                        <input type="number" name="jumlah_pembelian"
-                            class="form-control rounded-3 @error('jumlah_pembelian') is-invalid @enderror"
-                            value="{{ old('jumlah_pembelian') }}">
-                        @error('jumlah_pembelian')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary mb-4" id="tambah-detail">
+                        <i class="fas fa-plus-circle"></i> Tambah Barang
+                    </button>
 
-                    <div class="form-group mb-3">
-                        <label class="fw-semibold">Kategori Supplier</label>
-                        <select name="kategori_id"
-                            class="form-control rounded-3 @error('kategori_id') is-invalid @enderror">
-                            @foreach ($kategori as $k)
-                                <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
-                                    {{ $k->nama_kategori }}</option>
-                            @endforeach
-                        </select>
-                        @error('kategori_id')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
+                    {{-- Total Pengeluaran --}}
                     <div class="form-group mb-3">
                         <label class="fw-semibold">Total Pengeluaran</label>
                         <input type="number" name="harga"
@@ -92,60 +98,53 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-            </div>
 
-            <div class="d-flex justify-content-end gap-2">
-                <a href="{{ route('pembelian.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
-                <hr>
-                <button type="submit" class="btn btn-dark rounded-pill px-4">Simpan</button>
+                    {{-- Tombol --}}
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('pembelian.index') }}"
+                            class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
+                        <hr>
+                        <button type="submit" class="btn btn-dark rounded-pill px-4">Simpan</button>
+                    </div>
+                </form>
             </div>
-            </form>
         </div>
     </div>
-    </div>
-@endsection
 
-@push('scripts')
+    {{-- Script Tambah Detail --}}
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const supplierSelect = document.getElementById("supplierSelect");
-            const barangSelect = document.getElementById("barangSelect");
-            const oldSupplier = "{{ old('supplier_id') }}";
-            const oldBarang = "{{ old('nama_barang') }}";
+        let index = 1;
+        const kategoriOptions = `{!! $kategori->map(fn($k) => "<option value='$k->id'>$k->nama_kategori</option>")->implode('') !!}`;
 
-            supplierSelect.addEventListener("change", function() {
-                const selected = this.options[this.selectedIndex];
-                const barangData = selected.getAttribute("data-barang");
+        document.getElementById('tambah-detail').addEventListener('click', function() {
+            const html = `
+        <div class="border rounded p-3 mb-3 detail-item">
+            <div class="form-group mb-2">
+                <label class="fw-semibold">Kategori</label>
+                <select name="detail[${index}][kategori_id]" class="form-control rounded-3" required>
+                    <option value="">--Pilih Kategori--</option>
+                    ${kategoriOptions}
+                </select>
+            </div>
 
-                // Reset opsi
-                barangSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+            <div class="form-group mb-2">
+                <label class="fw-semibold">Nama Barang</label>
+                <input type="text" name="detail[${index}][nama_barang]" class="form-control rounded-3" required>
+            </div>
 
-                if (barangData) {
-                    let barangList;
-
-                    try {
-                        barangList = JSON.parse(barangData); // coba parse JSON
-                    } catch (e) {
-                        barangList = barangData.split(','); // fallback: split koma
-                    }
-
-                    barangList.forEach(barang => {
-                        const option = document.createElement("option");
-                        option.value = barang.trim();
-                        option.text = barang.trim();
-                        if (barang.trim() === oldBarang) {
-                            option.selected = true;
-                        }
-                        barangSelect.appendChild(option);
-                    });
-                }
-            });
-
-            // Trigger auto select jika sebelumnya ada value
-            if (oldSupplier) {
-                supplierSelect.value = oldSupplier;
-                supplierSelect.dispatchEvent(new Event('change'));
-            }
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="fw-semibold">Jumlah</label>
+                    <input type="number" name="detail[${index}][jumlah]" class="form-control rounded-3" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="fw-semibold">Harga Satuan</label>
+                    <input type="number" name="detail[${index}][harga_satuan]" class="form-control rounded-3" required>
+                </div>
+            </div>
+        </div>`;
+            document.getElementById('detail-wrapper').insertAdjacentHTML('beforeend', html);
+            index++;
         });
     </script>
-@endpush
+@endsection

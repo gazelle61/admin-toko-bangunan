@@ -16,6 +16,7 @@ class Barang extends Model
         'nama_barang',
         'ukuran',
         'kategori_id',
+        'satuan_harga',
         'harga', //decimal 15,2
         'stok',
         'deskripsi' //notnull

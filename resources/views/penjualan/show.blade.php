@@ -6,7 +6,7 @@
         .product-image {
             transition: transform 0.3s ease;
             cursor: zoom-in;
-            max-height: 300px;
+            max-height: 400px;
             object-fit: contain;
         }
 
@@ -46,6 +46,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
+                        {{-- highlight --}}
                         <tr>
                             <th>Bukti Transaksi</th>
                             <td class="text-center">
@@ -79,7 +80,7 @@
                             <th>Detail Penjualan</th>
                             <td class="mb-0 text-left">
                                 <ul class="mb-0 text-left">
-                                    @foreach ($penjualan->detail as $d)
+                                    @foreach ($penjualan->details as $d)
                                         <li>
                                             {{ $d->barang->nama_barang ?? '-' }}
                                             {{ $d->jumlah }} x Rp{{ number_format($d->harga_satuan, 0, ',', '.') }}
@@ -93,7 +94,7 @@
                 </div>
                 <div class="card-footer">
                     <a href="{{ route('penjualan.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a><hr>
-                    <a href="{{ $pdfUrl }}" target="_blank" class="btn btn-outline-info rounded-pill px-4">Lihat Struk PDF</a>
+                    {{-- <a href="{{ $pdfUrl }}" target="_blank" class="btn btn-outline-info rounded-pill px-4">Lihat Struk PDF</a> --}}
                 </div>
             </div>
         </div>

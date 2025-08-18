@@ -16,8 +16,8 @@
             </form>
         </div>
 
-        <div class="table-reponsive">
-            <table class="table table-bordered text-center align-midle">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
                 <thead class="thead-light">
                     <tr>
                         <th>No.</th>

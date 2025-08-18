@@ -47,11 +47,11 @@
                 <div class="card-body">
                     <table class="table table-bordered">
                         <tr>
-                            <th>Bukti Transaksi</th>
+                            <th>Nota Pembelian</th>
                             <td class="text-center">
-                                @if ($pembelian->bukti_transaksi)
-                                    <a href="#buktiFull">
-                                        <img src="{{ Storage::url($pembelian->bukti_transaksi) }}" alt="bukti_transaksi"
+                                @if ($pembelian->nota_pembelian)
+                                    <a href="#notaFull">
+                                        <img src="{{ Storage::url($pembelian->nota_pembelian) }}" alt="nota_pembelian"
                                             class="img-fluid rounded shadow product-image" style="max-height:200px;">
                                     </a>
                                 @else
@@ -61,7 +61,7 @@
                         </tr>
                         <tr>
                             <th>Tanggal Transaksi</th>
-                            <td>{{ $pembelian->tgl_transaksi }}</td>
+                            <td>{{ \Carbon\Carbon::parse($pembelian->tgl_transaksi)->translatedFormat('d F Y') }}</td>
                         </tr>
                         <tr>
                             <th>Supplier</th>
@@ -69,15 +69,35 @@
                         </tr>
                         <tr>
                             <th>Kategori</th>
-                            <td>{{ $pembelian->kategori->nama_kategori ?? '-' }}</td>
+                            <td>
+                                @foreach ($pembelian->details as $d)
+                                    {{ $d->kategori->nama_kategori ?? '-' }}
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <th>Nama Barang</th>
-                            <td>{{ $pembelian->nama_barang }}</td>
+                            <td>
+                                @foreach ($pembelian->details as $d)
+                                    {{ $d->nama_barang ?? '-' }}
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <th>Jumlah Pembelian</th>
-                            <td>{{ $pembelian->jumlah_pembelian }}</td>
+                            <td>
+                                @foreach ($pembelian->details as $d)
+                                    {{ $d->jumlah }}
+                                @endforeach
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Harga satuan</th>
+                            <td>
+                                @foreach ($pembelian->details as $d)
+                                    Rp{{ number_format($d->harga_satuan, 0, ',', '.') }}
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <th>Total Pengeluaran</th>
@@ -93,11 +113,11 @@
     </section>
 
     <!-- Fullscreen Overlay -->
-    @if ($pembelian->bukti_transaksi)
-        <div id="buktiFull" class="image-overlay">
+    @if ($pembelian->nota_pembelian)
+        <div id="notaFull" class="image-overlay">
             <a href="#"
                 style="position:absolute; top:20px; right:30px; color:white; font-size:30px; text-decoration:none;">&times;</a>
-            <img src="{{ Storage::url($pembelian->bukti_transaksi) }}" alt="bukti_transaksi">
+            <img src="{{ Storage::url($pembelian->nota_pembelian) }}" alt="nota_pembelian">
         </div>
     @endif
 @endsection

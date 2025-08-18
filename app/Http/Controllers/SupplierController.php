@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Kategori;
 use App\Models\Supplier;
-use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
@@ -12,8 +12,8 @@ class SupplierController extends Controller
     {
         $query = Supplier::with('kategori');
 
-        if ($request->has('search') && $request->search != '') {
-            $query->where('nama_supplier', 'like', '%', $request->search . '%');
+        if ($request->filled('search')) {
+            $query->where('nama_supplier', 'like', '%' . $request->search . '%');
         }
 
         $suppliers = $query->latest()->paginate(10);
@@ -30,74 +30,67 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'kategori_id' => 'required|exists:kategori,id',
             'barang_supplyan' => 'required|string',
             'kontak_supplier' => 'required|string|max:15',
-            'alamat_supplier' => 'required|string'
-        ]);
+            'alamat_supplier' => 'required|string',
+        ];
 
-        if ($request->filled('supplier_existing')) {
-            $supplier = Supplier::findOrFail($request->supplier_existing);
-        } else {
-            $request->validate([
-                'nama_supplier' => 'required|string'
-            ]);
-            $supplier = Supplier::create([
-                'nama_supplier' => $request->nama_supplier,
-                'kategori_id' => $request->kategori_id,
-                'barang_supplyan' => $request->barang_supplyan,
-                'kontak_supplier' => $request->kontak_supplier,
-                'alamat_supplier' => $request->alamat_supplier,
-            ]);
+        // Kalau pilih nama baru → wajib isi nama_supplier
+        if (!$request->filled('supplier_existing')) {
+            $rules['nama_supplier'] = 'required|string';
         }
 
-        return redirect()->route('supplier.index')->with('success', 'Data berhasil ditambahkan!');
+        $validated = $request->validate($rules);
+
+        $supplier = Supplier::create([
+            'kategori_id'     => $validated['kategori_id'],
+            'nama_supplier'   => $request->supplier_existing
+                ? Supplier::findOrFail($request->supplier_existing)->nama_supplier
+                : $validated['nama_supplier'],
+            'barang_supplyan' => $validated['barang_supplyan'],
+            'kontak_supplier' => $validated['kontak_supplier'],
+            'alamat_supplier' => $validated['alamat_supplier'],
+        ]);
+
+        return redirect()->route('supplier.index')->with('success', 'Data supplier berhasil ditambahkan!');
     }
 
     public function edit($id)
     {
         $supplier = Supplier::findOrFail($id);
         $kategori = Kategori::all();
-        $suppliers = Supplier::all();
-        return view('supplier.edit', compact('supplier', 'kategori', 'suppliers'));
+        $allSuppliers = Supplier::select('nama_supplier')->distinct()->get();
+
+        return view('supplier.edit', compact('supplier', 'kategori', 'allSuppliers'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $rules = [
             'kategori_id' => 'required|exists:kategori,id',
             'barang_supplyan' => 'required|string',
             'kontak_supplier' => 'required|string|max:15',
-            'alamat_supplier' => 'required|string'
-        ]);
+            'alamat_supplier' => 'required|string',
+        ];
 
-        if ($request->filled('supplier_existing')) {
-            // Ganti ke supplier lama yang sudah ada
-            $supplier = Supplier::findOrFail($id);
-            $existingSupplier = Supplier::findOrFail($request->supplier_existing);
-            $supplier->update([
-                'nama_supplier' => $existingSupplier->nama_supplier,
-                'kategori_id' => $request->kategori_id,
-                'barang_supplyan' => $request->barang_supplyan,
-                'kontak_supplier' => $request->kontak_supplier,
-                'alamat_supplier' => $request->alamat_supplier,
-            ]);
-        } else {
-            // Update dengan nama baru
-            $request->validate([
-                'nama_supplier' => 'required|string'
-            ]);
-
-            $supplier = Supplier::findOrFail($id);
-            $supplier->update([
-                'nama_supplier' => $request->nama_supplier,
-                'kategori_id' => $request->kategori_id,
-                'barang_supplyan' => $request->barang_supplyan,
-                'kontak_supplier' => $request->kontak_supplier,
-                'alamat_supplier' => $request->alamat_supplier,
-            ]);
+        if (!$request->filled('supplier_existing')) {
+            $rules['nama_supplier'] = 'required|string';
         }
+
+        $validated = $request->validate($rules);
+
+        $supplier = Supplier::findOrFail($id);
+        $supplier->update([
+            'kategori_id'     => $validated['kategori_id'],
+            'nama_supplier'   => $request->supplier_existing
+                ? Supplier::findOrFail($request->supplier_existing)->nama_supplier
+                : $validated['nama_supplier'],
+            'barang_supplyan' => $validated['barang_supplyan'],
+            'kontak_supplier' => $validated['kontak_supplier'],
+            'alamat_supplier' => $validated['alamat_supplier'],
+        ]);
 
         return redirect()->route('supplier.index')->with('success', 'Data berhasil diperbarui!');
     }
@@ -105,7 +98,6 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
-
         $supplier->delete();
 
         return redirect()->route('supplier.index')->with('success', 'Data berhasil dihapus!');
